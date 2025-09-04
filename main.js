@@ -324,7 +324,7 @@ async function fetchByCategory({ categoryId }) {
 
   //
 
-  const listTasks = divided[0].map((item) =>
+  const listTasks = divided[1].map((item) =>
     limit(async () => {
       const cat = await ProductCategories.findOne({
         cId: String(item.cId),
