@@ -1,0 +1,2861 @@
+{
+  "count": 579,
+  "items": [
+    {
+      "category_name": "식품",
+      "category_id": 2
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "통조림1",
+      "category_id": 200183144
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "식료품",
+      "category_id": 200180142
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "냉동식품",
+      "category_id": 201374104
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "식품/신선 (스페셜)",
+      "category_id": 202030002
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "채소/잎채소",
+      "category_id": 201373004
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "육류",
+      "category_id": 201379402
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "과일/베리류",
+      "category_id": 201379801
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "빵/페이스트리",
+      "category_id": 201378002
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "통조림",
+      "category_id": 201248407
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "소시지",
+      "category_id": 201378103
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "주류",
+      "category_id": 201345805
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "생선/해산물",
+      "category_id": 201376903
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "견과/씨앗1",
+      "category_id": 200001321
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "건과일1",
+      "category_id": 200001317
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "곡물 제품1",
+      "category_id": 200001287
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "커피1",
+      "category_id": 200001238
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "우유/달걀",
+      "category_id": 201376204
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "즉석식품",
+      "category_id": 201376702
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "/주스/음료",
+      "category_id": 201249506
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "건식품/지역 특산품",
+      "category_id": 201248805
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "커피",
+      "category_id": 201248804
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "건식품/지역 특산품1",
+      "category_id": 200003573
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "치즈",
+      "category_id": 201379901
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "건과일",
+      "category_id": 201254404
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "곡물 제품",
+      "category_id": 201254306
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "견과/씨앗",
+      "category_id": 201253905
+    },
+    {
+      "parent_category_id": 2,
+      "category_name": "차",
+      "category_id": 100007269
+    },
+    {
+      "category_name": "의류/액세서리",
+      "category_id": 3
+    },
+    {
+      "parent_category_id": 3,
+      "category_name": "스포츠웨어",
+      "category_id": 200003274
+    },
+    {
+      "category_name": "생활가전",
+      "category_id": 6
+    },
+    {
+      "parent_category_id": 6,
+      "category_name": "기타 홈 가전",
+      "category_id": 628
+    },
+    {
+      "parent_category_id": 6,
+      "category_name": "대형 가전",
+      "category_id": 200293142
+    },
+    {
+      "parent_category_id": 6,
+      "category_name": "가정용 가전",
+      "category_id": 200294142
+    },
+    {
+      "parent_category_id": 6,
+      "category_name": "개인 케어 가전",
+      "category_id": 200165142
+    },
+    {
+      "parent_category_id": 6,
+      "category_name": "상업용 가전",
+      "category_id": 200235142
+    },
+    {
+      "parent_category_id": 6,
+      "category_name": "청소 가전",
+      "category_id": 100000038
+    },
+    {
+      "parent_category_id": 6,
+      "category_name": "홈 가전 부품",
+      "category_id": 100000039
+    },
+    {
+      "parent_category_id": 6,
+      "category_name": "주방 가전",
+      "category_id": 100000041
+    },
+    {
+      "category_name": "컴퓨터/오피스",
+      "category_id": 7
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "데스크톱/일체형",
+      "category_id": 701
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "노트북",
+      "category_id": 702
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "오피스 소프트웨어",
+      "category_id": 200318143
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "내장 수납",
+      "category_id": 200154144
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "노트북 부품/액세서리",
+      "category_id": 200001083
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "컴퓨터 주변기기",
+      "category_id": 200001081
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "태블릿",
+      "category_id": 200001086
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "태블릿 액세서리/부품",
+      "category_id": 200001085
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "컴퓨터 부품",
+      "category_id": 200001076
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "수납 장치",
+      "category_id": 200001074
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "네트워킹",
+      "category_id": 200001077
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "컴퓨터 클리너",
+      "category_id": 708022
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "베어본/미니 PC",
+      "category_id": 70803003
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "3D 프린팅/적층 제조",
+      "category_id": 200003879
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "오피스 전자",
+      "category_id": 200003782
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "서버/산업용 컴퓨터",
+      "category_id": 201610101
+    },
+    {
+      "parent_category_id": 7,
+      "category_name": "DIY 게이밍 컴퓨터",
+      "category_id": 200048142
+    },
+    {
+      "category_name": "주택개선",
+      "category_id": 13
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "전기 기기/용품",
+      "category_id": 5
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "하드웨어",
+      "category_id": 42
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "석재 조각/조각상",
+      "category_id": 131207
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "조경 석재",
+      "category_id": 131211
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "상판/세면대 탑/테이블 탑",
+      "category_id": 131210
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "채석 석재/슬래브",
+      "category_id": 1312
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "빌딩 유리",
+      "category_id": 1315
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "사다리/비계",
+      "category_id": 1330
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "기타 홈 개선",
+      "category_id": 1333
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "배관",
+      "category_id": 200282142
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "가정 스마트 시스템",
+      "category_id": 200321150
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "설치 서비스",
+      "category_id": 201303704
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "정원 조경/데크",
+      "category_id": 12504
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "도장 용품/벽 마감재",
+      "category_id": 200264142
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "기능성 소재",
+      "category_id": 200001751
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "금속 빌딩 소재",
+      "category_id": 200001382
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "욕실 설비",
+      "category_id": 200066142
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "주방 설비",
+      "category_id": 200066144
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "bbbb",
+      "category_id": 200072142
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "난방/냉방/환기",
+      "category_id": 200366148
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "aaaa",
+      "category_id": 200071142
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "목재",
+      "category_id": 100005335
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "보드",
+      "category_id": 100005320
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "플라스틱 빌딩 소재",
+      "category_id": 100005310
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "토목 제품",
+      "category_id": 100005281
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "커튼 벽/액세서리",
+      "category_id": 100005265
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "천장",
+      "category_id": 100007099
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "썬룸/유리 하우스",
+      "category_id": 100007082
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "문/게이트/창문",
+      "category_id": 100007064
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "계단/계단 부품",
+      "category_id": 100007071
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "타일/액세서리",
+      "category_id": 100006285
+    },
+    {
+      "parent_category_id": 13,
+      "category_name": "바닥재/액세서리",
+      "category_id": 100006266
+    },
+    {
+      "category_name": "홈/정원",
+      "category_id": 15
+    },
+    {
+      "parent_category_id": 15,
+      "category_name": "정원 용품",
+      "category_id": 125
+    },
+    {
+      "parent_category_id": 15,
+      "category_name": "홈 텍스타일",
+      "category_id": 405
+    },
+    {
+      "parent_category_id": 15,
+      "category_name": "홈 수납/정리",
+      "category_id": 1541
+    },
+    {
+      "parent_category_id": 15,
+      "category_name": "홈 데코",
+      "category_id": 3710
+    },
+    {
+      "parent_category_id": 15,
+      "category_name": "가정용 생활용품",
+      "category_id": 200033149
+    },
+    {
+      "parent_category_id": 15,
+      "category_name": "주방/다이닝/바",
+      "category_id": 200000920
+    },
+    {
+      "parent_category_id": 15,
+      "category_name": "수집품",
+      "category_id": 200003998
+    },
+    {
+      "parent_category_id": 15,
+      "category_name": "아트/공예/바느질",
+      "category_id": 200003937
+    },
+    {
+      "parent_category_id": 15,
+      "category_name": "축제/파티 용품",
+      "category_id": 100001824
+    },
+    {
+      "parent_category_id": 15,
+      "category_name": "반려동물 제품",
+      "category_id": 100006664
+    },
+    {
+      "category_name": "스포츠/엔터테인먼트",
+      "category_id": 18
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "팀 스포츠",
+      "category_id": 200378143
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "농구 (신규)",
+      "category_id": 202220404
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "축구 (신규)",
+      "category_id": 202220403
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "스포츠 대회",
+      "category_id": 200297143
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "라켓 스포츠",
+      "category_id": 200003540
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "엔터테인먼트",
+      "category_id": 200003538
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "스키/스노보드",
+      "category_id": 200003543
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "롤러/스케이트보드",
+      "category_id": 200003541
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "자전거",
+      "category_id": 200003500
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "기타 스포츠/엔터테인먼트 제품",
+      "category_id": 200004194
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "스포츠 가방(숨김)",
+      "category_id": 200004217
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "수상 스포츠",
+      "category_id": 100005657
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "사격",
+      "category_id": 100005571
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "사냥",
+      "category_id": 100005563
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "낚시",
+      "category_id": 100005537
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "승마 승마",
+      "category_id": 100005551
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "캠핑/하이킹",
+      "category_id": 100005529
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "악기 기기",
+      "category_id": 100005481
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "피트니스/바디 빌딩",
+      "category_id": 100005371
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "골프",
+      "category_id": 100005360
+    },
+    {
+      "parent_category_id": 18,
+      "category_name": "치어리딩",
+      "category_id": 100005880
+    },
+    {
+      "category_name": "오피스/학교 용품",
+      "category_id": 21
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "지/인쇄용 매체",
+      "category_id": 2112
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "제도 용품",
+      "category_id": 2139
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "도서 (구)",
+      "category_id": 2202
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "지도/아틀라스",
+      "category_id": 2209
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "저널/정기간행물/잡지",
+      "category_id": 2213
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "우편/배송",
+      "category_id": 201330702
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "파일 제품",
+      "category_id": 201338004
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "데스크 액세서리/정리함",
+      "category_id": 211106
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "아트 용품",
+      "category_id": 211111
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "프레젠테이션 용품",
+      "category_id": 212002
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "회계 용품",
+      "category_id": 200652001
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "펜/연필/필기 용품",
+      "category_id": 200001743
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "프린팅 제품",
+      "category_id": 200001562
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "문구 스티커",
+      "category_id": 200004276
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "노트/필기 패드",
+      "category_id": 100003155
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "학교 용품",
+      "category_id": 100003125
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "테이프/접착/패스너",
+      "category_id": 100003134
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "교육 기기/용품",
+      "category_id": 100003135
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "오피스 제본 용품",
+      "category_id": 100003129
+    },
+    {
+      "parent_category_id": 21,
+      "category_name": "아트 공구 키트",
+      "category_id": 100003131
+    },
+    {
+      "category_name": "토이/하비",
+      "category_id": 26
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "스트레스 릴리프 토이",
+      "category_id": 200246142
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "놀이 차량/모형",
+      "category_id": 201534605
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "하비/수집품",
+      "category_id": 200388154
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "High Tech 토이",
+      "category_id": 200386159
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "ACG 상품",
+      "category_id": 202227409
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "아트/공예/DIY 토이",
+      "category_id": 200389156
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "수영장/수상 놀이",
+      "category_id": 200389159
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "키즈 파티",
+      "category_id": 200389146
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "게임/퍼즐",
+      "category_id": 200001726
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "인형/봉제 토이",
+      "category_id": 200001725
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "트렌디 블라인드 박스 토이",
+      "category_id": 202197601
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "전자 토이",
+      "category_id": 200001388
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "봉제 동물/플러시",
+      "category_id": 200001387
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "원격 조종 토이",
+      "category_id": 200001385
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "인형/액세서리",
+      "category_id": 200001389
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "노벨티/개그 토이",
+      "category_id": 200001384
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "빌딩/건설 토이",
+      "category_id": 200001383
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "야외 놀이/스포츠",
+      "category_id": 100001719
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "학습/교육",
+      "category_id": 100001714
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "역할 놀이",
+      "category_id": 100001716
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "클래식 토이",
+      "category_id": 100001715
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "유아/토들러 토이",
+      "category_id": 100001698
+    },
+    {
+      "parent_category_id": 26,
+      "category_name": "액션/토이 피규어",
+      "category_id": 201292714
+    },
+    {
+      "category_name": "보안/보호",
+      "category_id": 30
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "작업장 안전 용품",
+      "category_id": 3007
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "소방 보호",
+      "category_id": 3009
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "비디오 감시",
+      "category_id": 3011
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "도로 안전",
+      "category_id": 3015
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "출입 조종",
+      "category_id": 3030
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "사물인터넷 장치",
+      "category_id": 200330186
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "구급 응급 키트",
+      "category_id": 200001791
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "빌딩 자동화",
+      "category_id": 200327231
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "재난 구호 용품",
+      "category_id": 200327211
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "공공 방송",
+      "category_id": 200327212
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "금고",
+      "category_id": 200327196
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "보안 검사 장치",
+      "category_id": 200328267
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "자기 방어 용품",
+      "category_id": 200328217
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "무인항공기 시스템/로봇",
+      "category_id": 200332185
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "전송/케이블",
+      "category_id": 200004343
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "보안 알람",
+      "category_id": 200004311
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "인터폰",
+      "category_id": 200004310
+    },
+    {
+      "parent_category_id": 30,
+      "category_name": "스마트 카드 시스템",
+      "category_id": 200004309
+    },
+    {
+      "category_name": "자동차/부품/액세서리",
+      "category_id": 34
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "신규 에너지 차량 부품/액세서리",
+      "category_id": 201885506
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "자동차 서비스",
+      "category_id": 201268984
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "자동차 세차/정비",
+      "category_id": 200260142
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "자동차 수리 공구",
+      "category_id": 200259142
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "자동차 조명",
+      "category_id": 200002005
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "섀시 부품",
+      "category_id": 201902101
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "외장 액세서리",
+      "category_id": 200003427
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "엔진/엔진 부품",
+      "category_id": 201902201
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "내장 액세서리",
+      "category_id": 200003411
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "전기 기기",
+      "category_id": 201902301
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "소모성 부품",
+      "category_id": 201902401
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "외장 부품",
+      "category_id": 201902403
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "자동차 전자",
+      "category_id": 200000285
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "자동차 교체용 부품",
+      "category_id": 200000212
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "자동차 잠금 시스템",
+      "category_id": 201901903
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "자동차 정비 공구",
+      "category_id": 202229640
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "자동차용 센서",
+      "category_id": 201902001
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "자동차 판매",
+      "category_id": 200004218
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "기타 차량 부품/액세서리",
+      "category_id": 200004043
+    },
+    {
+      "parent_category_id": 34,
+      "category_name": "내장 부품",
+      "category_id": 201908801
+    },
+    {
+      "category_name": "주얼리/액세서리",
+      "category_id": 36
+    },
+    {
+      "parent_category_id": 36,
+      "category_name": "패션 주얼리",
+      "category_id": 1509
+    },
+    {
+      "parent_category_id": 36,
+      "category_name": "맞춤 주얼리",
+      "category_id": 201239108
+    },
+    {
+      "parent_category_id": 36,
+      "category_name": "주얼리 제작",
+      "category_id": 201238105
+    },
+    {
+      "parent_category_id": 36,
+      "category_name": "파인 주얼리",
+      "category_id": 200001680
+    },
+    {
+      "parent_category_id": 36,
+      "category_name": "주얼리 포장/디스플레이",
+      "category_id": 200001479
+    },
+    {
+      "parent_category_id": 36,
+      "category_name": "주얼리 공구/장비",
+      "category_id": 200001478
+    },
+    {
+      "parent_category_id": 36,
+      "category_name": "스마트 주얼리",
+      "category_id": 200370154
+    },
+    {
+      "category_name": "조명/조명",
+      "category_id": 39
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "조명 액세서리",
+      "category_id": 530
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "실내 조명",
+      "category_id": 1504
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "기타 조명/조명 제품",
+      "category_id": 3999
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "스페셜 공사용 조명",
+      "category_id": 200326144
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "전문 조명",
+      "category_id": 200001704
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "장식 조명",
+      "category_id": 150403
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "야외 조명",
+      "category_id": 150401
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "조명 전구/튜브",
+      "category_id": 150402
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "상업용 조명",
+      "category_id": 200001493
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "노벨티 조명 (신규)",
+      "category_id": 202228614
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "야간 조명",
+      "category_id": 39050508
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "LED 조명",
+      "category_id": 390501
+    },
+    {
+      "parent_category_id": 39,
+      "category_name": "휴대용 조명",
+      "category_id": 390503
+    },
+    {
+      "category_name": "컨슈머 전자",
+      "category_id": 44
+    },
+    {
+      "parent_category_id": 44,
+      "category_name": "액세서리/부품",
+      "category_id": 629
+    },
+    {
+      "parent_category_id": 44,
+      "category_name": "스마트 전자",
+      "category_id": 200003803
+    },
+    {
+      "parent_category_id": 44,
+      "category_name": "전자 담배",
+      "category_id": 200003561
+    },
+    {
+      "parent_category_id": 44,
+      "category_name": "게임/액세서리",
+      "category_id": 100000310
+    },
+    {
+      "parent_category_id": 44,
+      "category_name": "휴대용 오디오/비디오",
+      "category_id": 100000306
+    },
+    {
+      "parent_category_id": 44,
+      "category_name": "카메라/사진",
+      "category_id": 100000305
+    },
+    {
+      "parent_category_id": 44,
+      "category_name": "홈 오디오/비디오",
+      "category_id": 100000308
+    },
+    {
+      "category_name": "뷰티/헬스",
+      "category_id": 66
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "위생 지",
+      "category_id": 1513
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "구강 위생",
+      "category_id": 3305
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "스킨 케어",
+      "category_id": 3306
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "메이크업",
+      "category_id": 660103
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "면도/헤어 제모",
+      "category_id": 660302
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "뷰티 기기",
+      "category_id": 201169002
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "재활 용품",
+      "category_id": 202188610
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "의료 실험실 기기",
+      "category_id": 202219877
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "타투/바디 아트",
+      "category_id": 200001976
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "성인 제품",
+      "category_id": 200001508
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "헬스 케어",
+      "category_id": 200001355
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "목욕/샤워",
+      "category_id": 200001288
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "향수/데오도란트",
+      "category_id": 200001221
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "공구/액세서리",
+      "category_id": 200001187
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "헤어 케어/스타일링",
+      "category_id": 200001168
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "네일 아트/공구",
+      "category_id": 200001147
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "치과 용품",
+      "category_id": 201248902
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "마사지/휴식",
+      "category_id": 201217706
+    },
+    {
+      "parent_category_id": 66,
+      "category_name": "스킨 케어 공구",
+      "category_id": 100000616
+    },
+    {
+      "category_name": "웨딩/이벤트",
+      "category_id": 320
+    },
+    {
+      "parent_category_id": 320,
+      "category_name": "포멀 행사 드레스",
+      "category_id": 201236002
+    },
+    {
+      "parent_category_id": 320,
+      "category_name": "맞춤 행사 드레스",
+      "category_id": 201238406
+    },
+    {
+      "parent_category_id": 320,
+      "category_name": "웨딩 파티 드레스",
+      "category_id": 200000410
+    },
+    {
+      "parent_category_id": 320,
+      "category_name": "스페셜 행사 드레스",
+      "category_id": 200000749
+    },
+    {
+      "parent_category_id": 320,
+      "category_name": "웨딩 액세서리",
+      "category_id": 100005787
+    },
+    {
+      "parent_category_id": 320,
+      "category_name": "웨딩 드레스",
+      "category_id": 32005
+    },
+    {
+      "category_name": "신발",
+      "category_id": 322
+    },
+    {
+      "parent_category_id": 322,
+      "category_name": "여성 신발",
+      "category_id": 200133142
+    },
+    {
+      "parent_category_id": 322,
+      "category_name": "남성 신발",
+      "category_id": 200131145
+    },
+    {
+      "parent_category_id": 322,
+      "category_name": "뮬/클로그",
+      "category_id": 200001000
+    },
+    {
+      "parent_category_id": 322,
+      "category_name": "신발 액세서리",
+      "category_id": 32210
+    },
+    {
+      "parent_category_id": 322,
+      "category_name": "기타 신발",
+      "category_id": 32299
+    },
+    {
+      "category_name": "전자 부품/용품",
+      "category_id": 502
+    },
+    {
+      "parent_category_id": 502,
+      "category_name": "전자 데이터 시스템",
+      "category_id": 504
+    },
+    {
+      "parent_category_id": 502,
+      "category_name": "전자 재고",
+      "category_id": 515
+    },
+    {
+      "parent_category_id": 502,
+      "category_name": "능동 부품",
+      "category_id": 4001
+    },
+    {
+      "parent_category_id": 502,
+      "category_name": "전자 생산 기계",
+      "category_id": 4002
+    },
+    {
+      "parent_category_id": 502,
+      "category_name": "전자 액세서리/용품",
+      "category_id": 4003
+    },
+    {
+      "parent_category_id": 502,
+      "category_name": "광전자 디스플레이",
+      "category_id": 4004
+    },
+    {
+      "parent_category_id": 502,
+      "category_name": "수동 부품",
+      "category_id": 4005
+    },
+    {
+      "parent_category_id": 502,
+      "category_name": "기타 전자 부품",
+      "category_id": 4099
+    },
+    {
+      "parent_category_id": 502,
+      "category_name": "전자 간판",
+      "category_id": 150407
+    },
+    {
+      "parent_category_id": 502,
+      "category_name": "EL 제품",
+      "category_id": 150412
+    },
+    {
+      "category_name": "휴대폰/통신",
+      "category_id": 509
+    },
+    {
+      "parent_category_id": 509,
+      "category_name": "휴대폰",
+      "category_id": 5090301
+    },
+    {
+      "parent_category_id": 509,
+      "category_name": "무전기",
+      "category_id": 50906
+    },
+    {
+      "parent_category_id": 509,
+      "category_name": "휴대폰 부품",
+      "category_id": 201084002
+    },
+    {
+      "parent_category_id": 509,
+      "category_name": "통신장비",
+      "category_id": 100001204
+    },
+    {
+      "category_name": "테스트 카테고리 06",
+      "category_id": 127698009
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "AE 테스트01",
+      "category_id": 127698001
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "ae 테스트",
+      "category_id": 127698003
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "pv merge 테스트",
+      "category_id": 202212201
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "post cat q(test)",
+      "category_id": 127770007
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "AE 테스트06",
+      "category_id": 201831701
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "test-long",
+      "category_id": 127846001
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "postcat multilang",
+      "category_id": 127750006
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "테스트 zy leaf 3",
+      "category_id": 70903602
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "테스트 zy leaf 3",
+      "category_id": 70903603
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "testqiaoyu",
+      "category_id": 70904001
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "테스트 zy leaf 04",
+      "category_id": 70904202
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "테스트 zy non leaf1",
+      "category_id": 202171001
+    },
+    {
+      "parent_category_id": 127698009,
+      "category_name": "P merge 테스트",
+      "category_id": 202203801
+    },
+    {
+      "category_name": "공구",
+      "category_id": 1420
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "전동 공구",
+      "category_id": 1417
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "용접 및 납땜 용품",
+      "category_id": 1427
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "용접 장비 및 소모품",
+      "category_id": 1440
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "측정 및 분석 장비",
+      "category_id": 1537
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "리베터 건",
+      "category_id": 200183146
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "연마 도구 및 연마재",
+      "category_id": 202216802
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "드릴 비트/톱날/절단 공구",
+      "category_id": 202217001
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "레이저 조각 기계/액세서리",
+      "category_id": 202216201
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "수공구",
+      "category_id": 142003
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "공구 부품",
+      "category_id": 142001
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "건설 공구",
+      "category_id": 142016
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "기타 공구",
+      "category_id": 142099
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "정원 공구",
+      "category_id": 12503
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "전동 공구 부품/액세서리",
+      "category_id": 201252405
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "도구 세트",
+      "category_id": 200003955
+    },
+    {
+      "parent_category_id": 1420,
+      "category_name": "공구 포장",
+      "category_id": 100007485
+    },
+    {
+      "category_name": "엄마와 아이들",
+      "category_id": 1501
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "유아 의류",
+      "category_id": 310
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "아동복",
+      "category_id": 311
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "유모차&액세서리",
+      "category_id": 201273175
+    },
+
+    {
+      "parent_category_id": 1501,
+      "category_name": "활동/장비",
+      "category_id": 200002039
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "수유/이유",
+      "category_id": 200002038
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "안전",
+      "category_id": 200002006
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "기저귀/배변훈련",
+      "category_id": 200328147
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "임신/출산",
+      "category_id": 200328149
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "유아 기저귀/물티슈",
+      "category_id": 201671802
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "카시트/액세서리",
+      "category_id": 200329142
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "유아 케어",
+      "category_id": 200001330
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "유아 신발",
+      "category_id": 200000937
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "아동 신발",
+      "category_id": 200000947
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "임부복",
+      "category_id": 200000500
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "유아 살균/가전",
+      "category_id": 201678201
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "유아 기념품",
+      "category_id": 200332157
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "유아 가구",
+      "category_id": 200332158
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "유아 식품",
+      "category_id": 200364142
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "침구",
+      "category_id": 100003020
+    },
+    {
+      "parent_category_id": 1501,
+      "category_name": "키즈 액세서리",
+      "category_id": 201293501
+    },
+    {
+      "category_name": "가구",
+      "category_id": 1503
+    },
+    {
+      "parent_category_id": 1503,
+      "category_name": "가구 부품",
+      "category_id": 3708
+    },
+    {
+      "parent_category_id": 1503,
+      "category_name": "가구 액세서리",
+      "category_id": 3712
+    },
+    {
+      "parent_category_id": 1503,
+      "category_name": "카페 가구",
+      "category_id": 200130145
+    },
+    {
+      "parent_category_id": 1503,
+      "category_name": "시니어 가구",
+      "category_id": 202192402
+    },
+    {
+      "parent_category_id": 1503,
+      "category_name": "가정용 가구",
+      "category_id": 150303
+    },
+    {
+      "parent_category_id": 1503,
+      "category_name": "오피스 가구",
+      "category_id": 150304
+    },
+    {
+      "parent_category_id": 1503,
+      "category_name": "상업용 가구",
+      "category_id": 150301
+    },
+    {
+      "parent_category_id": 1503,
+      "category_name": "야외 가구",
+      "category_id": 150302
+    },
+    {
+      "parent_category_id": 1503,
+      "category_name": "기타 가구",
+      "category_id": 150399
+    },
+    {
+      "parent_category_id": 1503,
+      "category_name": "바 가구",
+      "category_id": 100001029
+    },
+    {
+      "parent_category_id": 1503,
+      "category_name": "아동 가구",
+      "category_id": 100003019
+    },
+    {
+      "category_name": "시계",
+      "category_id": 1511
+    },
+    {
+      "parent_category_id": 1511,
+      "category_name": "맞춤 시계",
+      "category_id": 202223401
+    },
+    {
+      "parent_category_id": 1511,
+      "category_name": "남성 시계",
+      "category_id": 200362146
+    },
+    {
+      "parent_category_id": 1511,
+      "category_name": "여성 시계",
+      "category_id": 200362145
+    },
+    {
+      "parent_category_id": 1511,
+      "category_name": "아동 시계",
+      "category_id": 200362144
+    },
+    {
+      "parent_category_id": 1511,
+      "category_name": "커플 시계",
+      "category_id": 200362143
+    },
+    {
+      "parent_category_id": 1511,
+      "category_name": "시계 액세서리",
+      "category_id": 200000121
+    },
+    {
+      "parent_category_id": 1511,
+      "category_name": "포켓/열쇠고리 시계",
+      "category_id": 200000126
+    },
+    {
+      "category_name": "러기지/가방",
+      "category_id": 1524
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "여름 가방",
+      "category_id": 201296801
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "여행 액세서리",
+      "category_id": 201296102
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "겨울 가방",
+      "category_id": 201295902
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "여행 가방",
+      "category_id": 201294604
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "지갑/카드홀더",
+      "category_id": 3803
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "특수 용도 가방",
+      "category_id": 3805
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "레저 가방",
+      "category_id": 3806
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "러기지",
+      "category_id": 201298604
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "웨이스트 팩(힙색)",
+      "category_id": 201396505
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "여성 핸드백",
+      "category_id": 201336907
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "남성 가방",
+      "category_id": 201337808
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "체스트백",
+      "category_id": 201401303
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "아동 가방",
+      "category_id": 201376929
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "학교 가방",
+      "category_id": 380520
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "러기지/여행 가방",
+      "category_id": 152404
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "백팩",
+      "category_id": 152401
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "서류가방",
+      "category_id": 152402
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "가방 부품/액세서리",
+      "category_id": 152409
+    },
+    {
+      "parent_category_id": 1524,
+      "category_name": "기타 러기지/가방",
+      "category_id": 152499
+    },
+    {
+      "category_name": "언더웨어",
+      "category_id": 200574005
+    },
+    {
+      "parent_category_id": 200574005,
+      "category_name": "남성 양말",
+      "category_id": 202219099
+    },
+    {
+      "parent_category_id": 200574005,
+      "category_name": "여성 슬립웨어/홈웨어",
+      "category_id": 200001894
+    },
+    {
+      "parent_category_id": 200574005,
+      "category_name": "비키니",
+      "category_id": 200001866
+    },
+    {
+      "parent_category_id": 200574005,
+      "category_name": "남성 속옷",
+      "category_id": 200001865
+    },
+    {
+      "parent_category_id": 200574005,
+      "category_name": "남성 슬립웨어/홈웨어",
+      "category_id": 200001813
+    },
+    {
+      "parent_category_id": 200574005,
+      "category_name": "여성 이너웨어",
+      "category_id": 200000349
+    },
+    {
+      "parent_category_id": 200574005,
+      "category_name": "여성 양말/스타킹",
+      "category_id": 200000854
+    },
+    {
+      "category_name": "가상 상품",
+      "category_id": 201169612
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "소프트웨어/게임",
+      "category_id": 201360737
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "여행/휴가",
+      "category_id": 202227427
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "호텔 예약",
+      "category_id": 202224618
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "항공권 예약",
+      "category_id": 202223632
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "휴대폰 충전",
+      "category_id": 201508601
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "오프라인 활동(신규 판매자용)",
+      "category_id": 201377714
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "충전 수수료 카테고리",
+      "category_id": 201809502
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "휴대폰 충전1111",
+      "category_id": 201354843
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "기프트카드",
+      "category_id": 201352363
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "선불 디지털 코드",
+      "category_id": 201353146
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "기프트카드 수수료 카테고리",
+      "category_id": 201810901
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "쿠폰",
+      "category_id": 201355944
+    },
+    {
+      "parent_category_id": 201169612,
+      "category_name": "이벤트 티켓",
+      "category_id": 201356254
+    },
+    {
+      "category_name": "산업/비즈니스",
+      "category_id": 202216001
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "목공 기계/액세서리",
+      "category_id": 1431
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "농업 기계/용품",
+      "category_id": 201919301
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "포장/인쇄/보조 기기",
+      "category_id": 202216602
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "패브릭/텍스타일 원자재",
+      "category_id": 202216805
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "산업용 예비 부품",
+      "category_id": 202216801
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "금속/합금",
+      "category_id": 202216804
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "산업용/상업용 청소 기기",
+      "category_id": 202216803
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "산업 기계/기기",
+      "category_id": 202217002
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "산업용 자동화 제어/액세서리",
+      "category_id": 202217003
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "고무/플라스틱",
+      "category_id": 202217201
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "에어 컴프레서/공압/유압",
+      "category_id": 202216002
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "화학제품",
+      "category_id": 202216003
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "송풍기/산업용 팬/배기 기기",
+      "category_id": 202216202
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "식품 기계/보조 기기",
+      "category_id": 202216402
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "건설 기계/액세서리",
+      "category_id": 202216401
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "금속 가공 기기/액세서리",
+      "category_id": 100007188
+    },
+    {
+      "parent_category_id": 202216001,
+      "category_name": "하역/창고/운송 기기",
+      "category_id": 100007498
+    },
+    {
+      "category_name": "스포츠 신발/의류/액세서리",
+      "category_id": 201768104
+    },
+    {
+      "parent_category_id": 201768104,
+      "category_name": "스포츠웨어/액세서리",
+      "category_id": 301
+    },
+    {
+      "parent_category_id": 201768104,
+      "category_name": "댄스",
+      "category_id": 201445239
+    },
+    {
+      "parent_category_id": 201768104,
+      "category_name": "스니커즈",
+      "category_id": 200000950
+    },
+    {
+      "parent_category_id": 201768104,
+      "category_name": "스포츠 액세서리",
+      "category_id": 202228436
+    },
+    {
+      "parent_category_id": 201768104,
+      "category_name": "스포츠 가방",
+      "category_id": 200046142
+    },
+    {
+      "category_name": "newlv1categorytest",
+      "category_id": 202192001
+    },
+    {
+      "parent_category_id": 202192001,
+      "category_name": "테스트 zy sop leaf1",
+      "category_id": 202174601
+    },
+    {
+      "category_name": "휴대폰/통신 액세서리",
+      "category_id": 202192403
+    },
+    {
+      "parent_category_id": 202192403,
+      "category_name": "SIM 카드/액세서리",
+      "category_id": 200001598
+    },
+    {
+      "parent_category_id": 202192403,
+      "category_name": "무전기 액세서리/부품",
+      "category_id": 202196002
+    },
+    {
+      "parent_category_id": 202192403,
+      "category_name": "휴대폰 케이스/커버",
+      "category_id": 202228401
+    },
+    {
+      "parent_category_id": 202192403,
+      "category_name": "휴대폰 사진 액세서리",
+      "category_id": 202228601
+    },
+    {
+      "parent_category_id": 202192403,
+      "category_name": "거치대/스탠드",
+      "category_id": 202228620
+    },
+    {
+      "parent_category_id": 202192403,
+      "category_name": "휴대폰 액세서리",
+      "category_id": 100001205
+    },
+    {
+      "category_name": "여성복",
+      "category_id": 200000345
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "스커트",
+      "category_id": 349
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "세트",
+      "category_id": 201531101
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "청바지(신규)",
+      "category_id": 202219298
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "셔츠/블라우스",
+      "category_id": 201303001
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "기본 의류",
+      "category_id": 202220408
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "천연 가죽",
+      "category_id": 200129142
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "스웨터/점퍼",
+      "category_id": 201241002
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "맞춤 스커트",
+      "category_id": 202225201
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "맞춤 블라우스/셔츠",
+      "category_id": 202225402
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "맞춤 드레스",
+      "category_id": 202225401
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "점프수트/롬퍼",
+      "category_id": 201240602
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "다운 코트",
+      "category_id": 200128142
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "수영복",
+      "category_id": 200001918
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "파카",
+      "category_id": 200001908
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "블레이저/수트",
+      "category_id": 200001912
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "퍼/페이크 퍼",
+      "category_id": 200001911
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "합성 가죽",
+      "category_id": 200001909
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "여성 세트",
+      "category_id": 200003494
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "기성 드레스",
+      "category_id": 201771210
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "점프수트/플레이수트/보디수트",
+      "category_id": 200000362
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "반바지",
+      "category_id": 200000367
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "바지/카프리",
+      "category_id": 200000366
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "스웨터",
+      "category_id": 200000373
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "후디/스웨트셔츠",
+      "category_id": 200000348
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "드레스",
+      "category_id": 200000347
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "블라우스/셔츠",
+      "category_id": 200000346
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "레깅스",
+      "category_id": 200000865
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "탑/티셔츠",
+      "category_id": 200000778
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "코트/재킷",
+      "category_id": 200000796
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "리얼 퍼",
+      "category_id": 200003908
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "빅사이즈 의류",
+      "category_id": 201516501
+    },
+    {
+      "parent_category_id": 200000345,
+      "category_name": "무슬림 패션",
+      "category_id": 201515701
+    },
+    {
+      "category_name": "남성복",
+      "category_id": 200000343
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "셔츠",
+      "category_id": 348
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "스웨터",
+      "category_id": 201236604
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "청바지(신규)",
+      "category_id": 202220211
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "기본 의류",
+      "category_id": 202220407
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "빅사이즈 남성 의류",
+      "category_id": 202225807
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "바지",
+      "category_id": 201240601
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "다운 코트",
+      "category_id": 200128143
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "수영복",
+      "category_id": 200001860
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "파카",
+      "category_id": 200001877
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "수트/블레이저",
+      "category_id": 200001819
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "남성 세트",
+      "category_id": 200003495
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "후디/스웨트셔츠",
+      "category_id": 200000344
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "탑/티셔츠",
+      "category_id": 200000779
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "코트/재킷",
+      "category_id": 200000795
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "반바지",
+      "category_id": 200005141
+    },
+    {
+      "parent_category_id": 200000343,
+      "category_name": "무슬림 패션",
+      "category_id": 201515601
+    },
+    {
+      "category_name": "의류 액세서리",
+      "category_id": 200000297
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "칼라 스테이",
+      "category_id": 200346143
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "스카프/모자/장갑 세트",
+      "category_id": 33906
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "서스펜더/브레이스/자세 교정기",
+      "category_id": 3280111
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "의류 패브릭/텍스타일",
+      "category_id": 201196803
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "신규 스카프/랩",
+      "category_id": 201531601
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "암워머",
+      "category_id": 201532001
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "신규 헤드웨어",
+      "category_id": 201303301
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "포켓 스퀘어",
+      "category_id": 200392144
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "아이웨어/액세서리",
+      "category_id": 200000440
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "헤드웨어",
+      "category_id": 200000395
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "장갑/벙어리장갑",
+      "category_id": 200000394
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "귀마개",
+      "category_id": 200000393
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "손수건",
+      "category_id": 200000400
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "스카프/랩",
+      "category_id": 200000399
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "암워머",
+      "category_id": 200000392
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "모자/캡",
+      "category_id": 200000402
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "벨트",
+      "category_id": 200000298
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "커머번드",
+      "category_id": 200000306
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "넥타이/보타이",
+      "category_id": 200000305
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "마스크",
+      "category_id": 200295142
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "무릎 슬리브",
+      "category_id": 200295143
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "타이 액세서리",
+      "category_id": 202229220
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "벨트 버클",
+      "category_id": 200301150
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "패션 지팡이",
+      "category_id": 201161809
+    },
+    {
+      "parent_category_id": 200000297,
+      "category_name": "DIY 액세서리",
+      "category_id": 201159809
+    },
+    {
+      "category_name": "헤어 익스텐션/가발",
+      "category_id": 200165144
+    },
+    {
+      "parent_category_id": 200165144,
+      "category_name": "뷰티 용품",
+      "category_id": 200317142
+    },
+    {
+      "parent_category_id": 200165144,
+      "category_name": "헤어 살롱 용품",
+      "category_id": 200319142
+    },
+    {
+      "parent_category_id": 200165144,
+      "category_name": "헤어 공구/액세서리",
+      "category_id": 201303603
+    },
+    {
+      "parent_category_id": 200165144,
+      "category_name": "인모(백인용)",
+      "category_id": 200166144
+    },
+    {
+      "parent_category_id": 200165144,
+      "category_name": "합성모",
+      "category_id": 200167144
+    },
+    {
+      "parent_category_id": 200165144,
+      "category_name": "합성모(백인용)",
+      "category_id": 200396142
+    },
+    {
+      "parent_category_id": 200165144,
+      "category_name": "아시아인용 헤어",
+      "category_id": 202170002
+    },
+    {
+      "parent_category_id": 200165144,
+      "category_name": "인모(흑인용)",
+      "category_id": 200168146
+    },
+    {
+      "parent_category_id": 200165144,
+      "category_name": "블렌드 가발(백인용)",
+      "category_id": 201222636
+    },
+    {
+      "parent_category_id": 200165144,
+      "category_name": "인모 가발(흑인용)",
+      "category_id": 127886013
+    },
+    {
+      "category_name": "스페셜 카테고리",
+      "category_id": 200001075
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "신발 사이즈 차트(테스트 전용)",
+      "category_id": 202186401
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "복권 티켓(부가세 미포함)",
+      "category_id": 201600601
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "속옷 사이즈 차트(테스트 전용)",
+      "category_id": 202223431
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "이벤트 티켓",
+      "category_id": 201174708
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "기프트카드1",
+      "category_id": 200024143
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "소프트웨어/게임 (부가세 미포함)",
+      "category_id": 201303705
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "판매 속성 설명 테스트",
+      "category_id": 202227428
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "여성 스포츠 의류 사이즈 차트(테스트 전용)",
+      "category_id": 202225002
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "주얼리 사이즈 차트(테스트 전용)",
+      "category_id": 202225004
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "남성 스포츠 의류 사이즈 차트(테스트 전용)",
+      "category_id": 202225003
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "남성 속옷 사이즈 차트(테스트 전용)",
+      "category_id": 202224019
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "남성 정장 사이즈 차트(테스트 전용)",
+      "category_id": 202224426
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "계약금/구매 대행",
+      "category_id": 200001627
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "기타",
+      "category_id": 200001620
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "출시 예정 제품",
+      "category_id": 200001623
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "경품",
+      "category_id": 200001621
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "맞춤 제작 비용",
+      "category_id": 200165143
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "추가 결제(주문용)",
+      "category_id": 200001079
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "결제 링크",
+      "category_id": 200001078
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "선불 디지털 코드",
+      "category_id": 201350802
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "기프트카드",
+      "category_id": 201252004
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "쿠폰",
+      "category_id": 201249605
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "아동 의류 사이즈 차트(테스트 전용)",
+      "category_id": 202233003
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "테스트",
+      "category_id": 200004358
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "신샤오위안 입문",
+      "category_id": 200004270
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "아동 신발 사이즈 차트(테스트 전용)",
+      "category_id": 202233401
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "휴대폰 충전",
+      "category_id": 200003892
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "해외 창고",
+      "category_id": 200003864
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "플랫폼 쿠폰",
+      "category_id": 200003560
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "벽지 샘플",
+      "category_id": 200726001
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "미니 앱",
+      "category_id": 201355115
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "남성 의류 사이즈 차트(테스트 전용)",
+      "category_id": 202210458
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "맞춤 제작 비용",
+      "category_id": 200376142
+    },
+    {
+      "parent_category_id": 200001075,
+      "category_name": "사이즈 차트(테스트 전용)",
+      "category_id": 202176801
+    },
+    {
+      "category_name": "도서/문화 생활용품",
+      "category_id": 202228412
+    },
+    {
+      "parent_category_id": 202228412,
+      "category_name": "도서",
+      "category_id": 201236701
+    },
+    {
+      "parent_category_id": 202228412,
+      "category_name": "음악/CD/바이닐 레코드",
+      "category_id": 202228813
+    },
+    {
+      "parent_category_id": 202228412,
+      "category_name": "문화 파생상품(오피스 용품)",
+      "category_id": 202229219
+    },
+    {
+      "category_name": "노벨티/특수 용도",
+      "category_id": 200000532
+    },
+    {
+      "parent_category_id": 200000532,
+      "category_name": "기능성 의류",
+      "category_id": 201302006
+    },
+    {
+      "parent_category_id": 200000532,
+      "category_name": "코스프레 의상",
+      "category_id": 202226810
+    },
+    {
+      "parent_category_id": 200000532,
+      "category_name": "이국풍 의류",
+      "category_id": 200000740
+    },
+    {
+      "parent_category_id": 200000532,
+      "category_name": "작업복/유니폼",
+      "category_id": 200000668
+    },
+    {
+      "parent_category_id": 200000532,
+      "category_name": "전통/민속 의류",
+      "category_id": 200000666
+    },
+    {
+      "parent_category_id": 200000532,
+      "category_name": "코스프레 액세서리",
+      "category_id": 200000663
+    },
+    {
+      "parent_category_id": 200000532,
+      "category_name": "무대/댄스 의상",
+      "category_id": 100005769
+    },
+    {
+      "category_name": "중고",
+      "category_id": 201520802
+    },
+    {
+      "parent_category_id": 201520802,
+      "category_name": "중고 휴대폰",
+      "category_id": 201523301
+    },
+    {
+      "category_name": "오토바이 장비/부품",
+      "category_id": 201355758
+    },
+    {
+      "parent_category_id": 201355758,
+      "category_name": "오토바이 부품",
+      "category_id": 201359843
+    },
+    {
+      "parent_category_id": 201355758,
+      "category_name": "튜닝/보호",
+      "category_id": 202057610
+    },
+    {
+      "parent_category_id": 201355758,
+      "category_name": "항공기",
+      "category_id": 201371802
+    },
+    {
+      "parent_category_id": 201355758,
+      "category_name": "보트",
+      "category_id": 201377402
+    },
+    {
+      "parent_category_id": 201355758,
+      "category_name": "오토바이/ATV",
+      "category_id": 201352247
+    },
+    {
+      "parent_category_id": 201355758,
+      "category_name": "오토바이 장비",
+      "category_id": 201352950
+    },
+    {
+      "parent_category_id": 201355758,
+      "category_name": "오토바이 액세서리",
+      "category_id": 201359147
+    },
+    {
+      "parent_category_id": 201355758,
+      "category_name": "장식/세정",
+      "category_id": 201357051
+    }
+  ]
+}

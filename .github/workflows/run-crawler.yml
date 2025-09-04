@@ -1,0 +1,162 @@
+name: Run Playwright Crawler Daily
+
+on:
+  schedule:
+    - cron: "30 */8 * * *" # 실행 시각(KST): 09:30, 15:30, 21:30, 03:30(+1일)
+  workflow_dispatch:
+
+jobs:
+  run-crawler:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      # 0) 러너 공인 IP 조회
+      - name: Get runner public IP (IPv4)
+        id: ip
+        run: echo "ip=$(curl -s https://api.ipify.org)" >> $GITHUB_OUTPUT
+
+      # 1) Atlas 프로젝트(DB) Access List에 러너 IP 임시 등록 (TTL)
+      - name: Add Project IP Access List (robust)
+        env:
+          ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
+          ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
+          ATLAS_GROUP_ID: ${{ secrets.ATLAS_GROUP_ID }} # 24-hex 또는 프로젝트 URL 둘 다 허용
+          IP: ${{ steps.ip.outputs.ip }}
+        run: |
+          set -u
+
+          # groupId 정규화: 공백/개행 제거 → URL이면 24-hex 추출 → 소문자화 → 형식검증
+          RAW="$(printf '%s' "${ATLAS_GROUP_ID}")"
+          TRIMMED="$(printf '%s' "$RAW" | tr -d '\r\n ' )"
+          EXTRACTED="$(printf '%s' "$TRIMMED" | sed -E 's#.*?/v2/([A-Fa-f0-9]{24}).*#\1#;t; s#^([A-Fa-f0-9]{24})$#\1#')"
+          GROUP_ID="$(printf '%s' "$EXTRACTED" | tr '[:upper:]' '[:lower:]')"
+
+          if ! echo "$GROUP_ID" | grep -Eq '^[a-f0-9]{24}$'; then
+            echo "::error::ATLAS_GROUP_ID 형식이 올바르지 않습니다. Project Settings > Project ID 또는 URL /v2/<24hex> 값을 사용하세요."
+            exit 1
+          fi
+
+          URL_V10="https://cloud.mongodb.com/api/atlas/v1.0/groups/${GROUP_ID}/accessList"
+          URL_V2="https://cloud.mongodb.com/api/atlas/v2/groups/${GROUP_ID}/accessList"
+
+          EXPIRY=$(date -u -d '+3 hours' '+%Y-%m-%dT%H:%M:%SZ')
+          printf '[{"ipAddress":"%s","comment":"gha-temp","deleteAfterDate":"%s"}]\n' "$IP" "$EXPIRY" > body.json
+
+          add_v10 () {
+            # 로그는 stderr로
+            echo "[Atlas v1.0] Adding IP until $EXPIRY ..." >&2
+            curl --silent --show-error --digest -u "${ATLAS_PUBLIC_KEY}:${ATLAS_PRIVATE_KEY}" \
+              -H "Content-Type: application/json" \
+              -X POST "$URL_V10" \
+              --data @body.json \
+              -D headers.txt -o resp.json -w "%{http_code}"
+          }
+
+          add_v2 () {
+            echo "[Atlas v2] Adding IP until $EXPIRY ..." >&2
+            curl --silent --show-error --digest -u "${ATLAS_PUBLIC_KEY}:${ATLAS_PRIVATE_KEY}" \
+              -H "Accept: application/vnd.atlas.2023-11-15+json" \
+              -H "Content-Type: application/json" \
+              -X POST "$URL_V2" \
+              --data @body.json \
+              -D headers.txt -o resp.json -w "%{http_code}"
+          }
+
+          # stdout에는 http_code 숫자만 남도록 보장됨
+          CODE="$(add_v10 | tr -dc '0-9')"
+          echo "HTTP $CODE"
+          if [ "$CODE" = "200" ] || [ "$CODE" = "201" ]; then
+            echo "[v1.0] OK"
+          else
+            echo "[v1.0] HTTP $CODE → v2로 재시도"
+            CODE="$(add_v2 | tr -dc '0-9')"
+            echo "HTTP $CODE"
+            if [ "$CODE" = "200" ] || [ "$CODE" = "201" ]; then
+              echo "[v2] OK"
+            else
+              echo "---- Response headers ----"; head -n 20 headers.txt || true
+              echo "---- Response body ----";    head -n 50 resp.json   || true
+              exit 1
+            fi
+          fi
+
+          # 전파 지연(권장)
+          sleep 8
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm" # package-lock.json 필요(없으면 이 줄 제거하거나 npm i 사용)
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Playwright 브라우저 및 의존 패키지 설치
+      - name: Install Playwright browsers & deps
+        run: npx playwright install --with-deps chromium
+
+      - name: Run crawler
+        env:
+          AE_APP_KEY: ${{ secrets.AE_APP_KEY }}
+          AE_APP_SECRET: ${{ secrets.AE_APP_SECRET }}
+          AE_REDIRECT_URI: ${{ secrets.AE_REDIRECT_URI }}
+          AE_TRACKING_ID: ${{ secrets.AE_TRACKING_ID }}
+          MONGODB_URL: ${{ secrets.MONGODB_URL }}
+          NODE_ENV: production
+        run: node main.js
+
+      # 2) 종료 시 정리: 프로젝트 Access List에서 즉시 제거 (TTL과 병행)
+      - name: Remove Project Access IP (prefer v1.0)
+        if: always()
+        env:
+          ATLAS_PUBLIC_KEY: ${{ secrets.ATLAS_PUBLIC_KEY }}
+          ATLAS_PRIVATE_KEY: ${{ secrets.ATLAS_PRIVATE_KEY }}
+          ATLAS_GROUP_ID: ${{ secrets.ATLAS_GROUP_ID }} # 24-hex 또는 프로젝트 URL 둘 다 허용
+          IP: ${{ steps.ip.outputs.ip }}
+        run: |
+          set -u
+
+          RAW="$(printf '%s' "${ATLAS_GROUP_ID}")"
+          TRIMMED="$(printf '%s' "$RAW" | tr -d '\r\n ' )"
+          EXTRACTED="$(printf '%s' "$TRIMMED" | sed -E 's#.*?/v2/([A-Fa-f0-9]{24}).*#\1#;t; s#^([A-Fa-f0-9]{24})$#\1#')"
+          GROUP_ID="$(printf '%s' "$EXTRACTED" | tr '[:upper:]' '[:lower:]')"
+
+          URL_V10="https://cloud.mongodb.com/api/atlas/v1.0/groups/${GROUP_ID}/accessList/${IP}"
+          URL_V2="https://cloud.mongodb.com/api/atlas/v2/groups/${GROUP_ID}/accessList/${IP}"
+
+          del_v10 () {
+            echo "[Atlas v1.0] Removing IP ..." >&2
+            curl --silent --show-error --digest -u "${ATLAS_PUBLIC_KEY}:${ATLAS_PRIVATE_KEY}" \
+              -X DELETE "$URL_V10" \
+              -D headers.txt -o resp.json -w "%{http_code}"
+          }
+
+          del_v2 () {
+            echo "[Atlas v2] Removing IP ..." >&2
+            curl --silent --show-error --digest -u "${ATLAS_PUBLIC_KEY}:${ATLAS_PRIVATE_KEY}" \
+              -H "Accept: application/vnd.atlas.2023-11-15+json" \
+              -X DELETE "$URL_V2" \
+              -D headers.txt -o resp.json -w "%{http_code}"
+          }
+
+          CODE="$(del_v10 | tr -dc '0-9')" || true
+          echo "HTTP $CODE"
+          if [ "$CODE" = "200" ] || [ "$CODE" = "202" ] || [ "$CODE" = "404" ]; then
+            echo "[v1.0] cleanup OK" # 404여도 이미 삭제된 상태로 간주
+            exit 0
+          fi
+
+          echo "[v1.0] not OK → v2로 폴백"
+          CODE="$(del_v2 | tr -dc '0-9')" || true
+          echo "HTTP $CODE"
+          if [ "$CODE" = "200" ] || [ "$CODE" = "202" ] || [ "$CODE" = "404" ]; then
+            echo "[v2] cleanup OK"
+          else
+            echo "---- Response headers ----"; head -n 20 headers.txt || true
+            echo "---- Response body ----";    head -n 50 resp.json   || true
+          fi
