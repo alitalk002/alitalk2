@@ -363,9 +363,6 @@ async function fetchByCategory({ categoryId }) {
         console.log(raw?.error_response ?? raw);
       }
 
-      console.log("item:", items[0]);
-      console.log("res:", res[0]);
-
       return [...items, ...res];
     })
   );
