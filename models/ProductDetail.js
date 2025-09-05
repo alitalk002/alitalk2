@@ -1,6 +1,6 @@
 // models/ProductDetail.js
 import mongoose from "mongoose";
-import ProductCategories from "./productCategories.js";
+import ProductCategories from "./ProductCategories.js";
 import Int32 from "mongoose-int32";
 import { kstISO } from "../utils/kstISO.js";
 

@@ -10,7 +10,8 @@ import dbConnect from "./utils/dbConnect.js";
 import { dateKeyKST } from "./utils/dateKeyKST.js";
 import mongoose from "mongoose";
 import { assert } from "console";
-import ProductCategories from "./models/productCategories.js";
+// import ProductCategories from "./models/ProductCategories.js";
+import ProductCategories from "./models/ProductCategories.js";
 const API = "https://api-sg.aliexpress.com/sync";
 const METHOD = "aliexpress.affiliate.product.query";
 
