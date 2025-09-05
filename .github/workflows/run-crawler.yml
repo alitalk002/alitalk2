@@ -90,15 +90,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           cache: "npm" # package-lock.json 필요(없으면 이 줄 제거하거나 npm i 사용)
 
       - name: Install dependencies
         run: npm ci
 
       # Playwright 브라우저 및 의존 패키지 설치
-      - name: Install Playwright browsers & deps
-        run: npx playwright install --with-deps chromium
 
       - name: Run crawler
         env:
