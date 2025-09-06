@@ -363,6 +363,9 @@ async function fetchByCategory({ categoryId }) {
         console.log(raw?.error_response ?? raw);
       }
 
+      console.log("item:", items[0]);
+      console.log("res:", res[0]);
+
       return [...items, ...res];
     })
   );
@@ -496,8 +499,6 @@ async function fetchByCategory({ categoryId }) {
               newSkus.push(item);
               continue;
             }
-            item.sale_price_with_tax = 1000;
-            // 문제 지점 전후로 세분화 try-catch
             let incomingSale;
             try {
               incomingSale = toNum(item?.sale_price_with_tax ?? null);
