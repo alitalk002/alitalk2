@@ -121,7 +121,7 @@ const ProductDetailSchema = new mongoose.Schema(
     st: { type: String, required: true, alias: "store_name" },
 
     ps: {
-      type: mongoose.Schema.Types.Int32,
+      type: Number,
       required: true,
       alias: "product_score",
       set: toNumber,
