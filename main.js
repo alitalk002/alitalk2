@@ -19,6 +19,61 @@ const APP_KEY = process.env.AE_APP_KEY;
 const APP_SECRET = process.env.AE_APP_SECRET;
 const TRACKING_ID = process.env.AE_TRACKING_ID;
 
+const USE_SYNONYM_MAP = true;
+const SYNONYM_KEY_MAP = { 색깔: "색상" };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 특수문자 이스케이프 + 문자 사이사이에 \s* 허용
+
+const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const makeSpaceAgnosticPattern = (raw) => {
+  const canon = String(raw ?? "")
+    .normalize("NFKC")
+    .replace(/\s+/g, ""); // 모든 공백 제거
+  return canon.length
+    ? canon.split("").map(escapeRegExp).join("\\s*") // 문자 사이에 임의 공백 허용
+    : ".*";
+};
+
+// 비교용 정규화: 지정 특수문자 + 공백 제거
+function stripForCompare(s) {
+  return String(s ?? "").replace(/[{}\[\]\(\)\"\s]/g, "");
+}
+
+// c 필드 비교용 정규화
+function normalizeCForCompare(c) {
+  return stripForCompare(c);
+}
+
+// sp 비교용 정규화
+function normalizeSpForCompare(spStr) {
+  if (typeof spStr !== "string") return stripForCompare(spStr);
+  // 1) JSON 파싱 시도
+  try {
+    let arr = JSON.parse(spStr);
+    if (!Array.isArray(arr)) arr = [arr];
+    // 2) 동의어 키 매핑 (선택)
+    const mapped = arr.map((obj) => {
+      const out = {};
+      for (const [k, v] of Object.entries(obj || {})) {
+        const nk = USE_SYNONYM_MAP ? SYNONYM_KEY_MAP[k] || k : k;
+        out[nk] = v;
+      }
+      // 키 정렬로 직렬화 안정화
+      return Object.fromEntries(
+        Object.entries(out).sort(([a], [b]) => (a > b ? 1 : -1))
+      );
+    });
+    // 3) 안정적 직렬화 후 strip
+    const stable = JSON.stringify(mapped);
+    return stripForCompare(stable);
+  } catch {
+    // 파싱 불가 → 그냥 strip 규칙만 적용
+    return stripForCompare(spStr);
+  }
+}
+
 const parseSkuProps = (val) => {
   if (!val) return [];
   if (Array.isArray(val)) return val;
@@ -38,17 +93,39 @@ const isEmptyProps = (arr) =>
   arr.length === 0 ||
   (arr.length === 1 && Object.keys(arr[0] || {}).length === 0);
 
+// 키 동의어: '색깔' → '색상'
+const KEY_SYNONYM = Object.freeze({
+  색깔: "색상",
+});
+
 const canonSkuProps = (arr) => {
   const a = parseSkuProps(arr);
   if (isEmptyProps(a)) return "";
+
   const canonArr = a.map((obj) => {
-    const entries = Object.entries(obj).map(([k, v]) => [
-      norm(k),
-      norm(String(v)),
-    ]);
-    entries.sort(([k1], [k2]) => (k1 > k2 ? 1 : k1 < k2 ? -1 : 0));
-    return Object.fromEntries(entries);
+    // 1) 키/값 정규화 + 동의어 치환
+    const pairs = [];
+    for (const [k, v] of Object.entries(obj || {})) {
+      const kNorm = norm(k);
+      // 원본 키와 정규화된 키 모두에 대해 치환 시도
+      const mapped = KEY_SYNONYM[k] ?? KEY_SYNONYM[kNorm] ?? kNorm;
+
+      const vNorm = norm(String(v));
+      pairs.push([mapped, vNorm]);
+    }
+
+    // 2) 키 정렬(직렬화 안정화)
+    pairs.sort(([k1], [k2]) => (k1 > k2 ? 1 : k1 < k2 ? -1 : 0));
+
+    // 3) 동의어 치환으로 생긴 중복 키 병합(첫 값 우선)
+    const merged = {};
+    for (const [k, v] of pairs) {
+      if (!(k in merged)) merged[k] = v;
+    }
+
+    return merged;
   });
+
   return JSON.stringify(canonArr);
 };
 
@@ -307,13 +384,13 @@ async function fetchByCategory({ categoryId }) {
 
   const productCategories = await ProductCategories.find();
   const total = productCategories.length;
-  const baseSize = Math.floor(total / 8); // 기본 크기
-  let remainder = total % 8; // 남는 개수
+  const baseSize = Math.floor(total / 10); // 기본 크기
+  let remainder = total % 10; // 남는 개수
 
   const divided = [];
   let start = 0;
 
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 10; i++) {
     // 나머지가 남아있으면 이 그룹은 +1개 더 받음
     const extra = remainder > 0 ? 1 : 0;
     const end = start + baseSize + extra;
@@ -437,7 +514,7 @@ async function fetchByCategory({ categoryId }) {
               sId: String(s.sku_id), // 문자열로 통일
               c: norm(s.color ?? ""), // 정규화 통일
               link: s.link ?? "",
-              sp: canonSkuProps(s.sku_properties ?? ""), // 정규화 통일
+              sp: normalizeSpForCompare(s.sku_properties ?? ""), // 정규화 통일
               cur: s.currency ?? "KRW",
               pd: {
                 [todayKey]: {
@@ -459,9 +536,9 @@ async function fetchByCategory({ categoryId }) {
           const toNum = (v) => (v == null ? NaN : +v);
           const safeNorm = (v) => norm(v ?? "");
           const toKey = (sid, color, props) =>
-            `${String(sid)}\u0001${safeNorm(color)}\u0001${canonSkuProps(
-              props
-            )}`;
+            `${String(sid)}\u0001${safeNorm(
+              color
+            )}\u0001${normalizeSpForCompare(props)}`;
 
           // 필요한 필드만
 
@@ -547,6 +624,9 @@ async function fetchByCategory({ categoryId }) {
             const cNorm = colorNorm(s.color);
             const spCanon = canonSkuProps(s.sku_properties);
 
+            const spRegex = makeSpaceAgnosticPattern(spCanon);
+            const cRegex = makeSpaceAgnosticPattern(cNorm);
+
             console.log("금일 첫 업데이트!");
 
             const pricePoint = {
@@ -568,7 +648,25 @@ async function fetchByCategory({ categoryId }) {
                     [`sku_info.sil.$[e].pd.${todayKey}`]: pricePoint,
                   },
                 },
-                arrayFilters: [{ "e.sId": sId, "e.sp": spCanon, "e.c": cNorm }],
+                arrayFilters: [
+                  {
+                    "e.sId": sId,
+                    $and: [
+                      {
+                        $or: [
+                          { "e.c": cNorm },
+                          { "e.c": { $regex: cRegex, $options: "i" } },
+                        ],
+                      },
+                      {
+                        $or: [
+                          { "e.sp": spCanon },
+                          { "e.sp": { $regex: spRegex, $options: "i" } },
+                        ],
+                      },
+                    ],
+                  },
+                ],
               },
             });
           }
@@ -578,6 +676,9 @@ async function fetchByCategory({ categoryId }) {
             const sId = String(s.sku_id);
             const cNorm = colorNorm(s.color);
             const spCanon = canonSkuProps(s.sku_properties);
+
+            const spRegex = makeSpaceAgnosticPattern(spCanon);
+            const cRegex = makeSpaceAgnosticPattern(cNorm);
 
             console.log("당일 최저가:!!");
 
@@ -597,13 +698,28 @@ async function fetchByCategory({ categoryId }) {
                     "sku_info.sil.$[e].link": s.link ?? "",
                     "sku_info.sil.$[e].sp": spCanon,
                     "sku_info.sil.$[e].cur": s.currency ?? "KRW",
-                    // 가격포인트 전체를 오늘 값으로 교체 (혹은 $min만 쓰고 싶으면 아래 줄 대신 $min 사용)
                     [`sku_info.sil.$[e].pd.${todayKey}`]: pricePoint,
                   },
-                  // $min만 엄격히 쓰려면:
-                  // $min: { [`sku_info.sil.$[e].pd.${todayKey}.s`]: Number(s.sale_price_with_tax ?? 1) },
                 },
-                arrayFilters: [{ "e.sId": sId, "e.sp": spCanon, "e.c": cNorm }],
+                arrayFilters: [
+                  {
+                    "e.sId": sId,
+                    $and: [
+                      {
+                        $or: [
+                          { "e.c": cNorm },
+                          { "e.c": { $regex: cRegex, $options: "i" } },
+                        ],
+                      },
+                      {
+                        $or: [
+                          { "e.sp": spCanon },
+                          { "e.sp": { $regex: spRegex, $options: "i" } },
+                        ],
+                      },
+                    ],
+                  },
+                ],
               },
             });
           }
