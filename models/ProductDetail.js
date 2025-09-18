@@ -6,6 +6,31 @@ import { kstISO } from "../utils/kstISO.js";
 
 mongoose.Schema.Types.Int32 = Int32;
 
+// ── 비교용 정규화 유틸 (파일 상단 util 위치에 둬도 됨)
+const _strip = (s) => String(s ?? "").replace(/[{}\[\]\(\)\"\s]/g, "");
+const _SP_MAP = { 색깔: "색상" }; // 라벨 동의어
+const _normC = (c) => _strip(c);
+const _normSp = (spStr) => {
+  try {
+    let arr = JSON.parse(spStr);
+    if (!Array.isArray(arr)) arr = [arr];
+    const mapped = arr.map((o) => {
+      const out = {};
+      for (const [k, v] of Object.entries(o || {})) {
+        const nk = _SP_MAP[k] || k;
+        out[nk] = v;
+      }
+      // 키 정렬
+      return Object.fromEntries(
+        Object.entries(out).sort(([a], [b]) => (a > b ? 1 : -1))
+      );
+    });
+    return _strip(JSON.stringify(mapped));
+  } catch {
+    return _strip(spStr);
+  }
+};
+
 // 숫자 문자열 안전 정규화 (쉼표/통화기호 제거)
 const toNumber = (v) =>
   v == null ? undefined : Number(String(v).replace(/[^\d.-]/g, "")).valueOf();
@@ -74,10 +99,12 @@ const SkuInfoSchema = new mongoose.Schema(
       default: [],
       validate: {
         validator(arr) {
-          const ids = arr.map((x) => x?.sku_id).filter((x) => x != null);
-          return ids.length === new Set(ids).size;
+          const keys = (arr || [])
+            .filter((x) => x && x.sId != null)
+            .map((x) => `${x.sId}||${_normC(x.c)}||${_normSp(x.sp)}`);
+          return keys.length === new Set(keys).size;
         },
-        message: "sku_info_list 내 sku_id가 중복되었습니다.",
+        message: "sku_info_list 중 (sId,c,sp) 조합이 중복되었습니다.",
       },
     },
   },
