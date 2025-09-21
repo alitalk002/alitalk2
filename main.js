@@ -380,7 +380,7 @@ async function fetchByCategory({ categoryId }) {
 
   await dbConnect();
 
-  // 정확히 8등분하기
+  // 정확히 10등분하기
 
   const productCategories = await ProductCategories.find();
   const total = productCategories.length;
@@ -491,22 +491,29 @@ async function fetchByCategory({ categoryId }) {
           const todayKey = dateKeyKST(); // "YYYY-MM-DD" (KST)
 
           // 2) 본문(upsert) 베이스
-          const baseDoc = {
-            vol: item.volume ?? 0,
-            ol: info.original_link ?? "",
-            pl: item.promotion_link ?? "",
 
-            // ref 필드에는 반드시 _id(ObjectId)만
-            cId1: cId1, // 없으면 undefined → $set에서 무시됨
-            cId2: cId2,
+          let baseDoc;
 
-            tt: info.title ?? "",
-            st: info.store_name ?? "",
-            ps: info.product_score ?? 0,
-            rn: info.review_number ?? 0,
-            il: info.image_link ?? "",
-            ail: info.additional_image_links?.string ?? [],
-          };
+          if (!info.title || norm(info.title) === "") {
+            baseDoc = {};
+          } else {
+            baseDoc = {
+              vol: item.volume ?? 0,
+              ol: info.original_link ?? "",
+              pl: item.promotion_link ?? "",
+
+              // ref 필드에는 반드시 _id(ObjectId)만
+              cId1: cId1, // 없으면 undefined → $set에서 무시됨
+              cId2: cId2,
+
+              tt: info.title ?? "",
+              st: info.store_name ?? "",
+              ps: info.product_score ?? 0,
+              rn: info.review_number ?? 0,
+              il: info.image_link ?? "",
+              ail: info.additional_image_links?.string ?? [],
+            };
+          }
 
           // 3) 최초 생성 시에만 넣을 SKU 전체(오늘 포인트 포함) — 임베디드 구조
           const skusForInsert = skuList.map((s) => {
