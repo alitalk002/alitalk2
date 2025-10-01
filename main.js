@@ -440,22 +440,30 @@ async function fetchByCategory({ categoryId }) {
         console.log(raw?.error_response ?? raw);
       }
 
-      return [...items, ...res];
+      return { item: [...items], dataBaseRes: [...res] };
     })
   );
 
-  // 모든 태스크 실행
-  const productIdList = (await Promise.all(listTasks)).flat();
-  const uniqueList = [
+  // 데이터베이스에 있는건 volume 200 안넘어도 업데이트
+
+  const ProductIdList = await Promise.all(listTasks);
+
+  const d = [
     ...new Map(
-      productIdList
-        .filter((item) => item.volume >= 200) // 🔹 volume 조건(외부 데이터 키가 volume이면 유지)
-        .map((item) => {
-          console.log("item._id:", item._id);
-          return [item._id, item];
+      ProductIdList[0].item
+        .filter((product) => product.volume >= 200) // 🔹 volume 조건(외부 데이터 키가 volume이면 유지)
+        .map((product) => {
+          // console.log("item._id:", item._id);
+          return [product._id, product];
         })
     ).values(),
   ];
+
+  const uniqueList = [...d, ProductIdList[0].dataBaseRes].flat();
+
+  console.log("uniqueList:", uniqueList);
+
+  //
 
   const failedIds = [];
 
@@ -491,29 +499,22 @@ async function fetchByCategory({ categoryId }) {
           const todayKey = dateKeyKST(); // "YYYY-MM-DD" (KST)
 
           // 2) 본문(upsert) 베이스
+          const baseDoc = {
+            vol: item.volume ?? 0,
+            ol: info.original_link ?? "",
+            pl: item.promotion_link ?? "",
 
-          let baseDoc;
+            // ref 필드에는 반드시 _id(ObjectId)만
+            cId1: cId1, // 없으면 undefined → $set에서 무시됨
+            cId2: cId2,
 
-          if (!info.title || norm(info.title) === "") {
-            baseDoc = {};
-          } else {
-            baseDoc = {
-              vol: item.volume ?? 0,
-              ol: info.original_link ?? "",
-              pl: item.promotion_link ?? "",
-
-              // ref 필드에는 반드시 _id(ObjectId)만
-              cId1: cId1, // 없으면 undefined → $set에서 무시됨
-              cId2: cId2,
-
-              tt: info.title ?? "",
-              st: info.store_name ?? "",
-              ps: info.product_score ?? 0,
-              rn: info.review_number ?? 0,
-              il: info.image_link ?? "",
-              ail: info.additional_image_links?.string ?? [],
-            };
-          }
+            tt: info.title ?? "",
+            st: info.store_name ?? "",
+            ps: info.product_score ?? 0,
+            rn: info.review_number ?? 0,
+            il: info.image_link ?? "",
+            ail: info.additional_image_links?.string ?? [],
+          };
 
           // 3) 최초 생성 시에만 넣을 SKU 전체(오늘 포인트 포함) — 임베디드 구조
           const skusForInsert = skuList.map((s) => {
