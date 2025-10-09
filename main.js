@@ -489,9 +489,14 @@ async function fetchByCategory({ categoryId }) {
 
   // ------------ 중복검사 --------------
 
-  const uniqueList = [
-    ...new Map(merged.map((p) => [String(p._id), p])).values(),
-  ];
+  const seen = new Set();
+  const uniqueList = [];
+  for (const p of merged) {
+    const id = String(p._id);
+    if (seen.has(id)) continue;
+    seen.add(id);
+    uniqueList.push(p);
+  }
 
   // // ----------------중복검사---------------
 
