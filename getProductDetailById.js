@@ -125,8 +125,6 @@ export async function getProductDetailsById(
   const raw = await callAliExpress(METHOD_DETAIL, bizParams);
   const items = normalizeDetailResponse(raw);
 
-  console.log("raw 최상위 키:", Object.keys(raw));
-  console.log("정규화 items 개수:", items.length);
   return { raw, items };
 }
 
@@ -138,23 +136,20 @@ const isDirect = process.argv[1] === fileURLToPath(import.meta.url);
 if (isDirect) {
   (async () => {
     // CLI 인자에서 상품ID 받기: node fetchByProductId.js 1005007856343236 4000669887458
-    const cliIds = process.argv.slice(2);
-    const ids = cliIds.length ? cliIds : ["1005007384675441"]; // 없으면 예시 값
+    // const cliIds = process.argv.slice(2);
+    const ids = ["1005008412177100"]; // 없으면 예시 값
 
-    console.log("실행 파일:", process.argv[1]);
-    console.log("모듈 파일:", fileURLToPath(import.meta.url));
-    console.log("직접 실행 여부:", isDirect);
-    console.log("조회 IDs:", ids);
-
-    const { items, raw } = await getProductDetailsById(ids, {
+    const product = await getProductDetailsById(ids, {
       country: "KR",
       target_language: "KO",
       target_currency: "KRW",
     });
 
-    console.dir(items.slice(0, 2), { depth: 2, maxArrayLength: 20 });
-    const r = raw?.aliexpress_affiliate_productdetail_get_response;
-    console.log("resp_code / resp_msg:", r?.resp_code, "/", r?.resp_msg);
+    // console.log("product:", product.items);
+
+    // console.dir(product.slice(0, 2), { depth: 2, maxArrayLength: 20 });
+    // const r = product?.aliexpress_affiliate_productdetail_get_response;
+    // console.log("resp_code / resp_msg:", r?.resp_code, "/", product?.resp_msg);
   })().catch((e) => {
     console.error("[에러]", e?.message ?? e);
     process.exit(1);

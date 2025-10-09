@@ -21,6 +21,7 @@
     "p-limit": "^7.1.0",
     "path": "^0.12.7",
     "playwright": "^1.55.0",
+    "tastranslate": "^1.0.4",
     "undici": "5.28.4"
   }
 }

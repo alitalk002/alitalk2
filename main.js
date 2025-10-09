@@ -12,6 +12,7 @@ import mongoose from "mongoose";
 import { assert } from "console";
 // import ProductCategories from "./models/ProductCategories.js";
 import ProductCategories from "./models/ProductCategories.js";
+import { getProductDetailsById } from "./getProductDetailById.js";
 const API = "https://api-sg.aliexpress.com/sync";
 const METHOD = "aliexpress.affiliate.product.query";
 
@@ -24,6 +25,14 @@ const SYNONYM_KEY_MAP = { 색깔: "색상" };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 특수문자 이스케이프 + 문자 사이사이에 \s* 허용
+//  실패 무해 try/catch, 배열 정규화
+const tryCatch = async (fn) => {
+  try {
+    return { ok: true, value: await fn() };
+  } catch (e) {
+    return { ok: false, error: e };
+  }
+};
 
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -308,7 +317,7 @@ async function fetchByCategory({ categoryId }) {
       tracking_id: TRACKING_ID,
       page_no: pageNo,
       page_size: pageSize,
-      target_language: "ko",
+      target_language: "KO",
       target_currency: "KRW",
       ship_to_country: "KR",
       // country: "KR", // 필요 시만 사용
@@ -402,23 +411,37 @@ async function fetchByCategory({ categoryId }) {
 
   //
 
-  const listTasks = divided[1].map((item) =>
+  const listTasks = { item: [], dataBaseRes: [] };
+
+  const categoryRes = divided[1].map((item) =>
     limit(async () => {
       const cat = await ProductCategories.findOne({
         cId: String(item.cId),
       });
 
-      const res = await ProductDetail.find({
-        $or: [{ cId1: cat._id }, { cId2: cat._id }],
-      })
+      if (!cat?._id) {
+        console.log("카테고리 없음:", item.cId);
+        return;
+      }
+
+      let res = await ProductDetail.find({ cId1: cat._id })
         .populate("cId1", "cId cn")
         .populate("cId2", "cId cn")
         .lean({ virtuals: true });
-      if (!cat?._id) {
-        console.log("카테고리 없음:", item.cId);
-      } else {
-        // res = await ProductDetail.find({ cId1: cat._id });
+
+      if (!res?.length) {
+        res = await ProductDetail.find({ cId2: cat._id })
+          .populate("cId1", "cId cn")
+          .populate("cId2", "cId cn")
+          .lean({ virtuals: true });
       }
+
+      // const res = await ProductDetail.find({
+      //   $or: [{ cId1: cat._id }, { cId2: cat._id }],
+      // })
+      //   .populate("cId1", "cId cn")
+      //   .populate("cId2", "cId cn")
+      //   .lean({ virtuals: true });
 
       const { items, raw, serverCount, filteredCount, note } =
         await fetchByCategory({
@@ -434,36 +457,47 @@ async function fetchByCategory({ categoryId }) {
 
       // console.log("items:", items);
 
-      if (items.length) {
-        console.log(items.slice(0, 5));
-      } else {
-        console.log(raw?.error_response ?? raw);
-      }
+      // if (items.length) {
+      //   console.log(items.slice(0, 5));
+      // } else {
+      //   console.log(raw?.error_response ?? raw);
+      // }
 
-      return { item: [...items], dataBaseRes: [...res] };
+      listTasks.item.push(...items);
+      listTasks.dataBaseRes.push(...res);
     })
   );
 
   // 데이터베이스에 있는건 volume 200 안넘어도 업데이트
 
-  const ProductIdList = await Promise.all(listTasks);
+  await Promise.allSettled(categoryRes);
+  // const ProductIdList = listTasks;
+  console.log("dataBaseRes", listTasks.dataBaseRes.length);
+  console.log("item", listTasks.item.length);
 
-  const d = [
-    ...new Map(
-      ProductIdList[0].item
-        .filter((product) => product.volume >= 200) // 🔹 volume 조건(외부 데이터 키가 volume이면 유지)
-        .map((product) => {
-          // console.log("item._id:", item._id);
-          return [product._id, product];
-        })
-    ).values(),
+  const items = (listTasks.item ?? []).filter((p) => Number(p?.volume) >= 200);
+  const dbs = listTasks.dataBaseRes ?? [];
+
+  const merged = [
+    ...dbs, // DB 먼저
+    ...items, // item 뒤 (우선권)
   ];
 
-  const uniqueList = [...d, ProductIdList[0].dataBaseRes].flat();
+  console.log("items:", items.length);
+  console.log("dbs:", dbs.length);
+  console.log("merged:", merged.length);
 
-  console.log("uniqueList:", uniqueList);
+  // ------------ 중복검사 --------------
 
-  //
+  const uniqueList = [
+    ...new Map(merged.map((p) => [String(p._id), p])).values(),
+  ];
+
+  // // ----------------중복검사---------------
+
+  console.log("uniqueList:", uniqueList.length);
+
+  // ------------------------------
 
   const failedIds = [];
 
@@ -472,14 +506,27 @@ async function fetchByCategory({ categoryId }) {
       limit(async () => {
         try {
           // 0) 외부 API
+          const productIds = [item._id];
+          let volume = undefined;
+
           const skuData = await withRetry(() => getSkuDetail(item._id), {
             retries: 3,
             base: 800,
             max: 10000,
           });
+          const pdRes = await tryCatch(() =>
+            withRetry(() => getProductDetailsById(productIds), {
+              retries: 3,
+              base: 800,
+              max: 10000,
+            })
+          );
 
-          // console.log("info:", info);
+          const productData = pdRes.ok ? pdRes.value : null;
 
+          if (productData?.items[0]?.volume) {
+            volume = productData.items[0].volume;
+          }
           const info = skuData?.ae_item_info ?? {};
           const sku = skuData?.ae_item_sku_info ?? {};
           const skuList = sku.traffic_sku_info_list ?? [];
@@ -499,22 +546,74 @@ async function fetchByCategory({ categoryId }) {
           const todayKey = dateKeyKST(); // "YYYY-MM-DD" (KST)
 
           // 2) 본문(upsert) 베이스
-          const baseDoc = {
-            vol: item.volume ?? 0,
-            ol: info.original_link ?? "",
-            pl: item.promotion_link ?? "",
 
-            // ref 필드에는 반드시 _id(ObjectId)만
-            cId1: cId1, // 없으면 undefined → $set에서 무시됨
-            cId2: cId2,
+          const baseDoc = {};
 
-            tt: info.title ?? "",
-            st: info.store_name ?? "",
-            ps: info.product_score ?? 0,
-            rn: info.review_number ?? 0,
-            il: info.image_link ?? "",
-            ail: info.additional_image_links?.string ?? [],
-          };
+          // console.log("item:", item);
+
+          if (Number(volume) > 0) {
+            baseDoc.volume = volume;
+          } else if (item.volume && Number(item.volume) !== 0) {
+            baseDoc.volume = item.volume;
+          }
+
+          if (
+            info.original_link &&
+            stripForCompare(info.original_link) !== ""
+          ) {
+            baseDoc.original_link = info.original_link;
+          }
+
+          if (
+            item.promotion_link &&
+            stripForCompare(item.promotion_link) !== ""
+          ) {
+            baseDoc.promotion_link = item.promotion_link;
+          }
+          if (cId1) {
+            baseDoc.cId1 = cId1;
+          }
+          if (cId2) {
+            baseDoc.cId2 = cId2;
+          }
+          if (info.title && stripForCompare(info.title) !== "") {
+            baseDoc.tt = info.title;
+          }
+          if (info.store_name && stripForCompare(info.store_name) !== "") {
+            baseDoc.st = info.store_name;
+          }
+          if (info.product_score && Number(info.product_score) !== 0) {
+            baseDoc.ps = info.product_score;
+          }
+          if (info.review_number && Number(info.review_number) !== 0) {
+            baseDoc.rn = info.review_number;
+          }
+          if (info.image_link && stripForCompare(info.image_link) !== "") {
+            baseDoc.il = info.image_link;
+          }
+          if (
+            info.additional_image_links?.string &&
+            info.additional_image_links?.string.length >= 1
+          ) {
+            baseDoc.ail = info.additional_image_links?.string;
+          }
+
+          // const baseDoc = {
+          //   vol: item.volume ?? 0,
+          //   ol: info.original_link ?? "",
+          //   pl: item.promotion_link ?? "",
+
+          //   // ref 필드에는 반드시 _id(ObjectId)만
+          //   cId1: cId1, // 없으면 undefined → $set에서 무시됨
+          //   cId2: cId2,
+
+          //   tt: info.title ?? "",
+          //   st: info.store_name ?? "",
+          //   ps: info.product_score ?? 0,
+          //   rn: info.review_number ?? 0,
+          //   il: info.image_link ?? "",
+          //   ail: info.additional_image_links?.string ?? [],
+          // };
 
           // 3) 최초 생성 시에만 넣을 SKU 전체(오늘 포인트 포함) — 임베디드 구조
           const skusForInsert = skuList.map((s) => {
