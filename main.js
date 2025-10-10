@@ -23,9 +23,11 @@ const TRACKING_ID = process.env.AE_TRACKING_ID;
 const USE_SYNONYM_MAP = true;
 const SYNONYM_KEY_MAP = { 색깔: "색상" };
 
+const limit = pLimit(10); // 동시에 7개만 실행
+
 // ─────────────────────────────────────────────────────────────────────────────
-// 특수문자 이스케이프 + 문자 사이사이에 \s* 허용
 //  실패 무해 try/catch, 배열 정규화
+
 const tryCatch = async (fn) => {
   try {
     return { ok: true, value: await fn() };
@@ -33,6 +35,7 @@ const tryCatch = async (fn) => {
     return { ok: false, error: e };
   }
 };
+// 특수문자 이스케이프 + 문자 사이사이에 \s* 허용
 
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -385,21 +388,19 @@ async function fetchByCategory({ categoryId }) {
 }
 
 (async () => {
-  const limit = pLimit(10); // 동시에 7개만 실행
-
   await dbConnect();
 
   // 정확히 10등분하기
 
   const productCategories = await ProductCategories.find();
   const total = productCategories.length;
-  const baseSize = Math.floor(total / 10); // 기본 크기
-  let remainder = total % 10; // 남는 개수
+  const baseSize = Math.floor(total / 13); // 기본 크기
+  let remainder = total % 13; // 남는 개수
 
   const divided = [];
   let start = 0;
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 13; i++) {
     // 나머지가 남아있으면 이 그룹은 +1개 더 받음
     const extra = remainder > 0 ? 1 : 0;
     const end = start + baseSize + extra;
@@ -412,6 +413,8 @@ async function fetchByCategory({ categoryId }) {
   //
 
   const listTasks = { item: [], dataBaseRes: [] };
+
+  // await processDivided(divided, listTasks);
 
   const categoryRes = divided[1].map((item) =>
     limit(async () => {
@@ -455,7 +458,9 @@ async function fetchByCategory({ categoryId }) {
       //   res = await ProductDetail.find({ ci2: item.category_id });
       // }
 
-      // console.log("items:", items);
+      console.log("cid:", item.cId);
+      console.log("items:", items.length);
+      console.log("res:", res.length);
 
       // if (items.length) {
       //   console.log(items.slice(0, 5));
@@ -470,7 +475,7 @@ async function fetchByCategory({ categoryId }) {
 
   // 데이터베이스에 있는건 volume 200 안넘어도 업데이트
 
-  await Promise.allSettled(categoryRes);
+  await Promise.allSettled(categoryRes, listTasks);
   // const ProductIdList = listTasks;
   console.log("dataBaseRes", listTasks.dataBaseRes.length);
   console.log("item", listTasks.item.length);
