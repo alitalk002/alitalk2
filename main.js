@@ -394,13 +394,13 @@ async function fetchByCategory({ categoryId }) {
 
   const productCategories = await ProductCategories.find();
   const total = productCategories.length;
-  const baseSize = Math.floor(total / 13); // 기본 크기
-  let remainder = total % 13; // 남는 개수
+  const baseSize = Math.floor(total / 14); // 기본 크기
+  let remainder = total % 14; // 남는 개수
 
   const divided = [];
   let start = 0;
 
-  for (let i = 0; i < 13; i++) {
+  for (let i = 0; i < 14; i++) {
     // 나머지가 남아있으면 이 그룹은 +1개 더 받음
     const extra = remainder > 0 ? 1 : 0;
     const end = start + baseSize + extra;
@@ -484,11 +484,11 @@ async function fetchByCategory({ categoryId }) {
   const dbs = listTasks.dataBaseRes ?? [];
 
   const merged = [
-    ...dbs, // DB 먼저
     ...items, // item 뒤 (우선권)
+    ...dbs, // DB 먼저
   ];
 
-  console.log("items:", items.length);
+  console.log("items:", items);
   console.log("dbs:", dbs.length);
   console.log("merged:", merged.length);
 
@@ -560,25 +560,28 @@ async function fetchByCategory({ categoryId }) {
           const baseDoc = {};
 
           // console.log("item:", item);
+          // console.log("volume:", volume);
+          // console.log("item.volume:", item.volume);
+          // console.log("item._id:", item._id);
 
           if (Number(volume) > 0) {
-            baseDoc.volume = volume;
+            baseDoc.vol = volume;
           } else if (item.volume && Number(item.volume) !== 0) {
-            baseDoc.volume = item.volume;
+            baseDoc.vol = item.volume;
           }
 
           if (
             info.original_link &&
             stripForCompare(info.original_link) !== ""
           ) {
-            baseDoc.original_link = info.original_link;
+            baseDoc.ol = info.original_link;
           }
 
           if (
             item.promotion_link &&
             stripForCompare(item.promotion_link) !== ""
           ) {
-            baseDoc.promotion_link = item.promotion_link;
+            baseDoc.pl = item.promotion_link;
           }
           if (cId1) {
             baseDoc.cId1 = cId1;
