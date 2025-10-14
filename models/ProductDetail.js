@@ -74,6 +74,7 @@ const SkuInfoItemSchema = new mongoose.Schema(
     c: { type: String, default: "", alias: "color" },
     link: { type: String, required: true },
     sp: { type: String, default: "", alias: "sku_properties" },
+    spKey: { type: String },
     cur: { type: String, default: "KRW", alias: "currency" },
     pd: {
       type: Map,

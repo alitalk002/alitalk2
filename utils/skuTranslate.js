@@ -1,15 +1,7 @@
-// utils/skuTranslate.simple.js  (ESM)
+// utils/skuTranslate.simple.js (ESM)
+// ✅ VALUE_MAP "한 곳"만 유지하면, 키/값 모두 여기 기준으로 치환됩니다.
 
-const KEY_MAP = {
-  Color: "색상",
-  "Remote Control": "리모컨",
-  Size: "사이즈",
-  // 필요시 추가...
-};
-
-// 값 매핑은 소문자 기준으로 단순 매칭
-// VALUE_MAP: 색상 동의어 → 대표색(16종) 통일
-const VALUE_MAP = {
+export const VALUE_MAP = {
   // ── 검정
   black: "검정",
   "jet black": "검정",
@@ -105,7 +97,7 @@ const VALUE_MAP = {
   라임: "초록",
   라임색: "초록",
 
-  // ── 청록(민트/틸/시아노/터키석/아쿠아 포함)
+  // ── 청록
   mint: "청록",
   teal: "청록",
   turquoise: "청록",
@@ -129,13 +121,14 @@ const VALUE_MAP = {
   sapphire: "파랑",
   블루: "파랑",
   파랑: "파랑",
-  파랑색: "파랑",
+  파란: "파랑",
   파란색: "파랑",
+  파랑색: "파랑",
   하늘색: "파랑",
   코발트: "파랑",
   코발트색: "파랑",
 
-  // ── 남색(네이비/인디고)
+  // ── 남색
   navy: "남색",
   indigo: "남색",
   네이비: "남색",
@@ -188,7 +181,7 @@ const VALUE_MAP = {
   코코아: "갈색",
   코코아색: "갈색",
 
-  // ── 베이지(아이보리/크림/탠/카키톤/샌드)
+  // ── 베이지
   beige: "베이지",
   tan: "베이지",
   khaki: "베이지",
@@ -206,56 +199,65 @@ const VALUE_MAP = {
   카키: "베이지",
   카키색: "베이지",
 
-  // ── 금색/은색(메탈릭)
+  // ── 메탈릭
   금: "금색",
   gold: "금색",
   golden: "금색",
   골드: "금색",
   금색: "금색",
+
   silver: "은색",
   은: "은색",
   실버: "은색",
   은색: "은색",
 
-  // ── 기타(투명)
+  // ── 투명
   transparent: "투명",
   clear: "투명",
   투명: "투명",
   투명색: "투명",
 
-  // 일상단어
-
+  // 일상 단어
   그렇습니다: "예",
   그래요: "예",
   yes: "예",
-
   아닙니다: "아니요",
   아니오: "아니요",
   no: "아니요",
 
+  // 플러그/지역 표기(일반화)
   us: "미국",
-  eu: "영국",
+  eu: "유럽",
+
+  // 키 단어가 값에 섞여 들어온 케이스 방지용
   Color: "색상",
   색깔: "색상",
   색: "색상",
 };
 
-// 2) 유틸
+// ────────────────────────────────────────────────────────────────
+// 유틸
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const toNFC = (x) => (typeof x === "string" ? x.normalize("NFC") : x);
 
-// 영어 키는 \b 경계 + 공백/하이픈 허용, 한글은 그대로 매칭
+/**
+ * VALUE_MAP으로부터 두 종류의 규칙 생성:
+ *  - enRules: 영문(또는 숫자 포함 라틴) 키는 단어경계 + 공백/하이픈 허용 (gi)
+ *  - koExactRules: 한글 포함 키는 "전체 일치"만 치환 (g 금지)
+ */
 function buildRules(map) {
-  const keys = Object.keys(map).sort((a, b) => b.length - a.length); // 긴 것 우선
+  const keys = Object.keys(map).sort((a, b) => b.length - a.length); // 긴 키 우선
   const enRules = [];
   const koExactRules = [];
 
-  for (const k of keys) {
-    const target = map[k];
-    const hasLatin = /[A-Za-z]/.test(k);
+  for (const rawKey of keys) {
+    const k = toNFC(rawKey);
+    const target = map[rawKey];
+    const hasLatin = /[A-Za-z0-9]/.test(k);
     const hasHangul = /[가-힣]/.test(k);
 
     if (hasLatin && !hasHangul) {
-      // 예: "sky blue" -> /\bsky[\s\-]+blue\b/gi
+      // 예: "sky blue" → /\bsky[\s\-]+blue\b/gi
       const tokens = k
         .trim()
         .replace(/\s*-\s*/g, "-")
@@ -264,8 +266,8 @@ function buildRules(map) {
       const pat = `\\b${tokens.join("[\\s\\-]+")}\\b`;
       enRules.push([new RegExp(pat, "gi"), target]);
     } else {
-      // 한글은 "전체 일치"만
-      koExactRules.push([new RegExp(`^${escapeRegExp(k)}$`, "g"), target]);
+      // 한글/기타는 전체 일치만 (lastIndex 문제 없도록 g 미사용)
+      koExactRules.push([new RegExp(`^${escapeRegExp(k)}$`), target]);
     }
   }
   return { enRules, koExactRules };
@@ -273,54 +275,73 @@ function buildRules(map) {
 
 const { enRules, koExactRules } = buildRules(VALUE_MAP);
 
-function replaceByDictInString(str) {
+/** 문자열 하나를 VALUE_MAP 규칙으로 치환 */
+function replaceInString(str) {
   if (typeof str !== "string") return str;
-  let out = str;
+  let out = toNFC(str);
 
-  // 1) 영문 토큰 치환(부분 일치 허용: 경계 기반)
+  // 1) 영문 토큰 기반 치환 (부분 일치 허용: 단어경계/하이픈/공백)
   for (const [re, rep] of enRules) out = out.replace(re, rep);
 
-  // 2) 한글은 "정확히 동일할 때만" 치환
+  // 2) 한글 등 exact 치환 (전체 일치일 때만)
   for (const [re, rep] of koExactRules) {
     if (re.test(out)) {
-      // 전체 일치하면 교체
       out = out.replace(re, rep);
-      break; // 한 번 치환했으면 종료 (과잉 치환 방지)
+      break;
     }
   }
   return out;
 }
 
-// 3) 키/값/중첩 전부 치환
+/**
+ * 객체/배열/원시 전역 치환
+ *  - 키도 replaceInString으로 치환
+ *  - 값도 재귀적으로 치환
+ *  - 키 충돌 시 마지막 값을 우선(필요하면 병합 로직으로 확장 가능)
+ */
 function replaceEverywhere(data) {
-  if (Array.isArray(data)) return data.map(replaceEverywhere);
+  if (Array.isArray(data)) {
+    return data.map(replaceEverywhere);
+  }
   if (data && typeof data === "object") {
     const res = {};
     for (const [k, v] of Object.entries(data)) {
-      const newKey = replaceByDictInString(k); // ← 키 치환
-      res[newKey] = replaceEverywhere(v); // ← 값(재귀)
+      const newKey = replaceInString(k);
+      const newVal = replaceEverywhere(v);
+      res[newKey] = newVal; // 충돌 시 덮어씀
     }
     return res;
   }
-  return replaceByDictInString(data); // ← 문자열/그 외
+  return replaceInString(data); // 문자열/그 외
 }
 
-// 4) 진입점: 문자열(JSON)이면 파싱해서 처리 후, 입력이 문자열이었다면 다시 문자열로
-export function translateSkuPropertiesSimple(skuProperties) {
-  const isString = typeof skuProperties === "string";
-  let data = skuProperties;
+/**
+ * 진입점:
+ *  - 문자열이면 JSON.parse 시도 → 성공 시 구조치환 → 다시 문자열로
+ *  - 파싱 실패 시에는 "그 문자열 자체"만 토큰 치환
+ *  - 비문자(객체/배열)면 구조치환 후 원형 반환
+ */
+export function translateSkuPropertiesSimple(input) {
+  const isString = typeof input === "string";
 
   if (isString) {
+    const raw = input.trim();
     try {
-      data = JSON.parse(skuProperties);
+      const parsed = JSON.parse(raw);
+      const transformed = replaceEverywhere(parsed);
+      return JSON.stringify(transformed);
     } catch {
-      /* 그대로 처리 */
+      // JSON 아니면 문자열만 치환
+      return replaceInString(input);
     }
   }
 
-  const transformed = replaceEverywhere(data);
-
-  return isString && typeof transformed !== "string"
-    ? JSON.stringify(transformed)
-    : transformed;
+  // 객체/배열이면 구조 치환
+  return replaceEverywhere(input);
 }
+
+// ────────────────────────────────────────────────────────────────
+// 사용 예시
+// const sp = `[{"색깔":"NO  WHITE","플러그 유형":"us"}]`;
+// console.log(translateSkuPropertiesSimple(sp));
+// -> 키 "색깔" → "색상", 값 "NO  WHITE" → (VALUE_MAP에 매핑되어 있으면) "흰색", "us" → "미국"

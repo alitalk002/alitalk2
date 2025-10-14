@@ -388,8 +388,6 @@ async function getServerSideProps(ctx) {
     allProductPsList.push(...psTop100);
     allProductVolList.push(...volTop100);
 
-    console.log("offTop100:", offTop100);
-
     const res = await CategoryLandingProduct.updateOne(
       { categoryName: category.categoryName },
       {

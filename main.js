@@ -13,6 +13,16 @@ import { assert } from "console";
 // import ProductCategories from "./models/ProductCategories.js";
 import ProductCategories from "./models/ProductCategories.js";
 import { getProductDetailsById } from "./getProductDetailById.js";
+import {
+  translateSkuPropertiesSimple,
+  VALUE_MAP,
+} from "./utils/skuTranslate.js";
+import {
+  normalizeCForCompare,
+  normalizeSpForCompare,
+  stripForCompare,
+} from "./utils/normalize.js";
+
 const API = "https://api-sg.aliexpress.com/sync";
 const METHOD = "aliexpress.affiliate.product.query";
 
@@ -37,54 +47,107 @@ const tryCatch = async (fn) => {
 };
 // 특수문자 이스케이프 + 문자 사이사이에 \s* 허용
 
-const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const ZWSP = "\u200B"; // 제로폭 공백(실제 문자)
+const NBSP = "\u00A0"; // NBSP(실제 문자)
 
-const makeSpaceAgnosticPattern = (raw) => {
-  const canon = String(raw ?? "")
-    .normalize("NFKC")
-    .replace(/\s+/g, ""); // 모든 공백 제거
-  return canon.length
-    ? canon.split("").map(escapeRegExp).join("\\s*") // 문자 사이에 임의 공백 허용
-    : ".*";
-};
+function escapeRegex(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // 특수문자 리터럴화
+}
 
-// 비교용 정규화: 지정 특수문자 + 공백 제거
-function stripForCompare(s) {
+function makeSpaceAgnosticPattern(raw) {
+  const cleaned = String(raw).normalize("NFKC");
+
+  // 허용할 잡음 문자 집합(괄호/공백/구두점/제로폭/NBSP/하이픈/언더스코어)
+  const SEP = `[\\s()\\[\\]{}:;,'"\`·•・ㆍ·\\-_${ZWSP}${NBSP}]*`;
+
+  // ❗️여기 바뀜: 문자 단위로 나눈 후 각 문자 escape → SEP로 join
+  const body = Array.from(cleaned)
+    .map((ch) => escapeRegex(ch))
+    .join(SEP);
+
+  return `^${SEP}${body}${SEP}$`;
+}
+
+// const makeSpaceAgnosticPattern = (raw) => {
+//   const canon = String(raw ?? "")
+//     .normalize("NFKC")
+//     .replace(/\s+/g, ""); // 모든 공백 제거
+//   return canon.length
+//     ? canon.split("").map(escapeRegExp).join("\\s*") // 문자 사이에 임의 공백 허용
+//     : ".*";
+// };
+
+function deepSortObjectKeysKo(input) {
+  if (Array.isArray(input)) return input.map(deepSortObjectKeysKo);
+  if (input && typeof input === "object") {
+    const sorted = Object.entries(input)
+      .map(([k, v]) => [normKey(k), deepSortObjectKeysKo(v)])
+      .sort(([a], [b]) => koCollator.compare(a, b));
+    return Object.fromEntries(sorted);
+  }
+  return input;
+}
+
+function sortArrayOfObjectsStable(arr) {
+  return arr
+    .map((o) => deepSortObjectKeysKo(o))
+    .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
+}
+
+function stripMinimal(s) {
   return String(s ?? "").replace(/[{}\[\]\(\)\"\s]/g, "");
 }
 
-// c 필드 비교용 정규화
-function normalizeCForCompare(c) {
-  return stripForCompare(c);
-}
+// 비교용 정규화: 지정 특수문자 + 공백 제거
+// function stripForCompare(s) {
+//   return String(s ?? "").replace(/[{}\[\]\(\)\"\s]/g, "");
+// }
 
 // sp 비교용 정규화
-function normalizeSpForCompare(spStr) {
-  if (typeof spStr !== "string") return stripForCompare(spStr);
-  // 1) JSON 파싱 시도
-  try {
-    let arr = JSON.parse(spStr);
-    if (!Array.isArray(arr)) arr = [arr];
-    // 2) 동의어 키 매핑 (선택)
-    const mapped = arr.map((obj) => {
-      const out = {};
-      for (const [k, v] of Object.entries(obj || {})) {
-        const nk = USE_SYNONYM_MAP ? SYNONYM_KEY_MAP[k] || k : k;
-        out[nk] = v;
-      }
-      // 키 정렬로 직렬화 안정화
-      return Object.fromEntries(
-        Object.entries(out).sort(([a], [b]) => (a > b ? 1 : -1))
-      );
-    });
-    // 3) 안정적 직렬화 후 strip
-    const stable = JSON.stringify(mapped);
-    return stripForCompare(stable);
-  } catch {
-    // 파싱 불가 → 그냥 strip 규칙만 적용
-    return stripForCompare(spStr);
-  }
-}
+// function normalizeSpForCompare(spStr) {
+//   if (typeof spStr !== "string") return stripForCompare(spStr);
+//   // 1) JSON 파싱 시도
+//   try {
+//     let arr = JSON.parse(spStr);
+//     if (!Array.isArray(arr)) arr = [arr];
+//     // 2) 동의어 키 매핑 (선택)
+//     const mapped = arr.map((obj) => {
+//       const out = {};
+//       for (const [k, v] of Object.entries(obj || {})) {
+//         const nk = USE_SYNONYM_MAP ? SYNONYM_KEY_MAP[k] || k : k;
+//         out[nk] = v;
+//       }
+//       // 키 정렬로 직렬화 안정화
+//       return Object.fromEntries(
+//         Object.entries(out).sort(([a], [b]) => (a > b ? 1 : -1))
+//       );
+//     });
+//     // 3) 안정적 직렬화 후 strip
+//     const stable = JSON.stringify(mapped);
+//     return stripForCompare(stable);
+//   } catch {
+//     // 파싱 불가 → 그냥 strip 규칙만 적용
+//     return stripForCompare(spStr);
+//   }
+// }
+
+// sp 비교용 정규화
+// export function normalizeSpForCompare(spStr) {
+//   // 1) JSON 파싱 시도
+//   try {
+//     let arr = JSON.parse(spStr);
+//     if (!Array.isArray(arr)) arr = [arr];
+
+//     const trans = stripForCompare(spStr);
+
+//     // 3) 안정적 직렬화 후 strip
+//     const stable = JSON.stringify(trans);
+//     return stripForCompare(stable);
+//   } catch {
+//     // 파싱 불가 → 그냥 strip 규칙만 적용
+//     return stripForCompare(spStr);
+//   }
+// }
 
 const parseSkuProps = (val) => {
   if (!val) return [];
@@ -115,15 +178,17 @@ const canonSkuProps = (arr) => {
   if (isEmptyProps(a)) return "";
 
   const canonArr = a.map((obj) => {
-    // 1) 키/값 정규화 + 동의어 치환
+    // 1) 키/값 정규화 + 동의어 치환 (키/값 모두 KEY_SYNONYM 사용)
     const pairs = [];
     for (const [k, v] of Object.entries(obj || {})) {
       const kNorm = norm(k);
-      // 원본 키와 정규화된 키 모두에 대해 치환 시도
-      const mapped = KEY_SYNONYM[k] ?? KEY_SYNONYM[kNorm] ?? kNorm;
+      const kMapped = VALUE_MAP[k] ?? VALUE_MAP[kNorm] ?? kNorm;
 
-      const vNorm = norm(String(v));
-      pairs.push([mapped, vNorm]);
+      const vRaw = String(v).trim();
+      const vNorm = norm(vRaw);
+      const vMapped = VALUE_MAP[vRaw] ?? VALUE_MAP[vNorm] ?? vNorm;
+
+      pairs.push([kMapped, vMapped]);
     }
 
     // 2) 키 정렬(직렬화 안정화)
@@ -390,7 +455,7 @@ async function fetchByCategory({ categoryId }) {
 (async () => {
   await dbConnect();
 
-  // 정확히 10등분하기
+  // 정확히 14등분하기
 
   const productCategories = await ProductCategories.find();
   const total = productCategories.length;
@@ -488,7 +553,6 @@ async function fetchByCategory({ categoryId }) {
     ...dbs, // DB 먼저
   ];
 
-  console.log("items:", items);
   console.log("dbs:", dbs.length);
   console.log("merged:", merged.length);
 
@@ -517,26 +581,13 @@ async function fetchByCategory({ categoryId }) {
         try {
           // 0) 외부 API
           const productIds = [item._id];
-          let volume = undefined;
 
           const skuData = await withRetry(() => getSkuDetail(item._id), {
             retries: 3,
             base: 800,
             max: 10000,
           });
-          const pdRes = await tryCatch(() =>
-            withRetry(() => getProductDetailsById(productIds), {
-              retries: 3,
-              base: 800,
-              max: 10000,
-            })
-          );
 
-          const productData = pdRes.ok ? pdRes.value : null;
-
-          if (productData?.items[0]?.volume) {
-            volume = productData.items[0].volume;
-          }
           const info = skuData?.ae_item_info ?? {};
           const sku = skuData?.ae_item_sku_info ?? {};
           const skuList = sku.traffic_sku_info_list ?? [];
@@ -564,18 +615,30 @@ async function fetchByCategory({ categoryId }) {
           // console.log("item.volume:", item.volume);
           // console.log("item._id:", item._id);
 
-          if (Number(volume) > 0) {
-            baseDoc.vol = volume;
-          } else if (item.volume && Number(item.volume) !== 0) {
+          if (item.volume && Number(item.volume) !== 0) {
             baseDoc.vol = item.volume;
+          } else {
+            const pdRes = await tryCatch(() =>
+              withRetry(() => getProductDetailsById(productIds), {
+                retries: 2,
+                base: 800,
+                max: 10000,
+              })
+            );
+            const productData = pdRes.ok ? pdRes.value : null;
+
+            if (Number(productData?.items[0]?.volume) > 0) {
+              baseDoc.vol = productData.items[0].volume;
+              console.log("baseDoc:", productData.items[0].volume);
+            }
           }
 
-          if (
-            info.original_link &&
-            stripForCompare(info.original_link) !== ""
-          ) {
-            baseDoc.ol = info.original_link;
-          }
+          // if (
+          //   info.original_link &&
+          //   stripForCompare(info.original_link) !== ""
+          // ) {
+          //   baseDoc.ol = info.original_link;
+          // }
 
           if (
             item.promotion_link &&
@@ -629,12 +692,14 @@ async function fetchByCategory({ categoryId }) {
           // };
 
           // 3) 최초 생성 시에만 넣을 SKU 전체(오늘 포인트 포함) — 임베디드 구조
+
           const skusForInsert = skuList.map((s) => {
             return {
               sId: String(s.sku_id), // 문자열로 통일
               c: norm(s.color ?? ""), // 정규화 통일
               link: s.link ?? "",
-              sp: normalizeSpForCompare(s.sku_properties ?? ""), // 정규화 통일
+              sp: canonSkuProps(s.sku_properties ?? ""), // 정규화 통일
+              spKey: normalizeSpForCompare(s.sku_properties ?? ""), // 정규화 통일
               cur: s.currency ?? "KRW",
               pd: {
                 [todayKey]: {
@@ -747,6 +812,9 @@ async function fetchByCategory({ categoryId }) {
             const spRegex = makeSpaceAgnosticPattern(spCanon);
             const cRegex = makeSpaceAgnosticPattern(cNorm);
 
+            const spKey = normalizeSpForCompare(s.sku_properties);
+
+            console.log("item:", item._id);
             console.log("금일 첫 업데이트!");
 
             const pricePoint = {
@@ -775,14 +843,11 @@ async function fetchByCategory({ categoryId }) {
                       {
                         $or: [
                           { "e.c": cNorm },
-                          { "e.c": { $regex: cRegex, $options: "i" } },
+                          { "e.c": { $regex: cRegex, $options: "x" } },
                         ],
                       },
                       {
-                        $or: [
-                          { "e.sp": spCanon },
-                          { "e.sp": { $regex: spRegex, $options: "i" } },
-                        ],
+                        $or: [{ "e.spKey": spKey }, { "e.sp": spCanon }],
                       },
                     ],
                   },
@@ -796,6 +861,8 @@ async function fetchByCategory({ categoryId }) {
             const sId = String(s.sku_id);
             const cNorm = colorNorm(s.color);
             const spCanon = canonSkuProps(s.sku_properties);
+
+            const spKey = normalizeSpForCompare(s.sku_properties);
 
             const spRegex = makeSpaceAgnosticPattern(spCanon);
             const cRegex = makeSpaceAgnosticPattern(cNorm);
@@ -828,14 +895,11 @@ async function fetchByCategory({ categoryId }) {
                       {
                         $or: [
                           { "e.c": cNorm },
-                          { "e.c": { $regex: cRegex, $options: "i" } },
+                          { "e.c": { $regex: cRegex, $options: "x" } },
                         ],
                       },
                       {
-                        $or: [
-                          { "e.sp": spCanon },
-                          { "e.sp": { $regex: spRegex, $options: "i" } },
-                        ],
+                        $or: [{ "e.spKey": spKey }, { "e.sp": spCanon }],
                       },
                     ],
                   },
