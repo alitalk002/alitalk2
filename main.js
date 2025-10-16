@@ -731,10 +731,15 @@ async function fetchByCategory({ categoryId }) {
           const existingIds = new Set(
             (doc?.sku_info?.sil ?? []).map((d) => String(d?.sId))
           );
-          const skuMap = new Map();
+          const skuMap1 = new Map();
+          const skuMap2 = new Map();
           for (const sku of sil) {
             const k = toKey(sku?.sId, sku?.c, sku?.sp);
-            skuMap.set(k, sku);
+            if (sku?.spKey) {
+              const j = toKey(sku?.sId, sku?.c, sku?.spKey);
+              skuMap2.set(j, sku);
+            }
+            skuMap1.set(k, sku);
           }
 
           const newSkus = [];
@@ -749,14 +754,21 @@ async function fetchByCategory({ categoryId }) {
               newSkus.push(item);
               continue;
             }
+            const key1 = toKey(sid, item?.color, item?.sku_properties);
 
-            const key = toKey(sid, item?.color, item?.sku_properties);
+            const exist1 = skuMap1.get(key1);
 
-            const exist = skuMap.get(key);
+            if (!exist1) {
+              const SPKEY = normalizeSpForCompare(item?.sku_properties);
 
-            if (!exist) {
-              newSkus.push(item);
-              continue;
+              const key2 = toKey(sid, item?.color, SPKEY);
+              const exist2 = skuMap2.get(key2);
+              console.log("skuMap2:", skuMap2);
+              console.log("key2:", key2);
+              if (!exist2) {
+                newSkus.push(item);
+                continue;
+              }
             }
             // 문제 지점 전후로 세분화 try-catch
             let incomingSale;
@@ -768,7 +780,7 @@ async function fetchByCategory({ categoryId }) {
             }
             let docToday, docSale;
             try {
-              docToday = exist?.pd?.[todayKey];
+              docToday = exist1?.pd?.[todayKey];
               docSale = toNum(docToday?.s);
             } catch (e) {
               throw e;
@@ -912,20 +924,27 @@ async function fetchByCategory({ categoryId }) {
 
           // 5-4) 새로 발견된 sku들을 push
           if (newSkus.length > 0 && doc) {
-            const toPush = newSkus.map((s) => ({
-              sId: String(s?.sku_id),
-              c: s?.color ?? "",
-              link: s.link,
-              sp: s.sku_properties ?? "",
-              cur: s.currency ?? "KRW",
-              pd: {
-                [todayKey]: {
-                  p: s.price_with_tax,
-                  s: s.sale_price_with_tax,
-                  t: new Date(),
+            const toPush = newSkus.map((s) => {
+              const spKey = normalizeSpForCompare(s.sku_properties);
+              const cNorm = colorNorm(s.color);
+              const spCanon = canonSkuProps(s.sku_properties);
+
+              return {
+                sId: String(s?.sku_id),
+                c: cNorm ?? "",
+                link: s.link,
+                sp: spCanon ?? "",
+                spKey: spKey ?? "",
+                cur: s.currency ?? "KRW",
+                pd: {
+                  [todayKey]: {
+                    p: s.price_with_tax,
+                    s: s.sale_price_with_tax,
+                    t: new Date(),
+                  },
                 },
-              },
-            }));
+              };
+            });
 
             ops.push({
               updateOne: {
