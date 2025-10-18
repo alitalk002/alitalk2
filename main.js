@@ -687,7 +687,7 @@ async function fetchByCategory({ categoryId }) {
           const skusForInsert = skuList.map((s) => {
             return {
               sId: String(s.sku_id), // 문자열로 통일
-              c: norm(s.color ?? ""), // 정규화 통일
+              c: normalizeCForCompare(s.color ?? ""), // 정규화 통일
               link: s.link ?? "",
               sp: canonSkuProps(s.sku_properties ?? ""), // 정규화 통일
               spKey: normalizeSpForCompare(s.sku_properties ?? ""), // 정규화 통일
@@ -815,7 +815,7 @@ async function fetchByCategory({ categoryId }) {
           // 5-2) 금일 첫 sku 업데이트 (오늘 키가 없던 케이스)
           for (const s of updSkus) {
             const sId = String(s.sku_id);
-            const cNorm = colorNorm(s.color);
+            const cNorm = normalizeCForCompare(s.color);
             const spCanon = canonSkuProps(s.sku_properties);
 
             const spRegex = makeSpaceAgnosticPattern(spCanon);
@@ -873,7 +873,7 @@ async function fetchByCategory({ categoryId }) {
           // 5-3) 오늘 최저가 갱신 (문서의 오늘가 > 신규가)
           for (const s of lowPriceUpdSkus) {
             const sId = String(s.sku_id);
-            const cNorm = colorNorm(s.color);
+            const cNorm = normalizeCForCompare(s.color);
             const spCanon = canonSkuProps(s.sku_properties);
 
             const spKey = normalizeSpForCompare(s.sku_properties);
@@ -932,7 +932,7 @@ async function fetchByCategory({ categoryId }) {
           if (newSkus.length > 0 && doc) {
             const toPush = newSkus.map((s) => {
               const spKey = normalizeSpForCompare(s.sku_properties);
-              const cNorm = colorNorm(s.color);
+              const cNorm = normalizeCForCompare(s.color);
               const spCanon = canonSkuProps(s.sku_properties);
 
               return {
