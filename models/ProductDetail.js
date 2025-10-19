@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 import ProductCategories from "./ProductCategories.js";
 import Int32 from "mongoose-int32";
 import { kstISO } from "../utils/kstISO.js";
+import {
+  normalizeCForCompare,
+  normalizeSpForCompare,
+} from "../utils/normalize.js";
 
 mongoose.Schema.Types.Int32 = Int32;
 
@@ -71,10 +75,14 @@ const PricePointSchema = new mongoose.Schema(
 const SkuInfoItemSchema = new mongoose.Schema(
   {
     sId: { type: String, required: true, alias: "sku_id" },
-    c: { type: String, default: "", alias: "color" },
+    c: { type: String, default: "", alias: "color", set: normalizeCForCompare },
     link: { type: String, required: true },
-    sp: { type: String, default: "", alias: "sku_properties" },
-    spKey: { type: String },
+    sp: {
+      type: String,
+      default: "",
+      alias: "sku_properties",
+    },
+    spKey: { type: String, set: normalizeSpForCompare },
     cur: { type: String, default: "KRW", alias: "currency" },
     pd: {
       type: Map,

@@ -81,24 +81,26 @@ export async function getSkuDetail(productId) {
       return e;
     }
 
-    const list = Array.isArray(result?.ae_item_sku_info?.traffic_sku_info_list)
-      ? result.ae_item_sku_info.traffic_sku_info_list
-      : [];
+    // const list = Array.isArray(result?.ae_item_sku_info?.traffic_sku_info_list)
+    //   ? result.ae_item_sku_info.traffic_sku_info_list
+    //   : [];
 
     // 각 item.sku_properties만 변환
-    const translatedList = list.map((item) => ({
-      ...item,
-      sku_properties: translateSkuPropertiesSimple(item.sku_properties),
-    }));
+    // const translatedList = list.map((item) => ({
+    //   ...item,
+    //   sku_properties: translateSkuPropertiesSimple(item.sku_properties),
+    // }));
 
-    // 원래 구조에 다시 꽂기(불변 업데이트)
-    const newResult = {
-      ...result,
-      ae_item_sku_info: {
-        ...result.ae_item_sku_info,
-        traffic_sku_info_list: translatedList,
-      },
-    };
+    // // 원래 구조에 다시 꽂기(불변 업데이트)
+    // const newResult = {
+    //   ...result,
+    //   ae_item_sku_info: {
+    //     ...result.ae_item_sku_info,
+    //     traffic_sku_info_list: translatedList,
+    //   },
+    // };
+
+    // console.log("result:", result.ae_item_sku_info.traffic_sku_info_list);
 
     return result;
   } catch (e) {
@@ -106,4 +108,4 @@ export async function getSkuDetail(productId) {
   }
 }
 
-getSkuDetail(1005007528780320);
+getSkuDetail(1005007509783630);

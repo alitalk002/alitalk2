@@ -4,6 +4,34 @@ import ProductDetail from "./models/ProductDetail.js";
 import dbConnect from "./utils/dbConnect.js";
 import CategoryLandingProduct from "./models/CategoryLandingProduct.js";
 
+// ── 기준: 현재로부터 4일
+const FOUR_DAYS_MS = 4 * 24 * 60 * 60 * 1000;
+
+function getLatestPdTime(pd) {
+  if (!pd) return null;
+
+  const vals = pd instanceof Map ? Array.from(pd.values()) : Object.values(pd);
+  let latest = null;
+
+  // 1) PricePoint 값의 t 사용
+  for (const v of vals) {
+    const ts = v?.t ? Date.parse(v.t) : NaN;
+    if (!Number.isNaN(ts)) latest = latest == null ? ts : Math.max(latest, ts);
+  }
+
+  // 2) 값들에 t가 없으면 키(날짜 문자열) 파싱
+  if (latest == null) {
+    const keys = pd instanceof Map ? Array.from(pd.keys()) : Object.keys(pd);
+    for (const k of keys) {
+      const ts = Date.parse(k);
+      if (!Number.isNaN(ts))
+        latest = latest == null ? ts : Math.max(latest, ts);
+    }
+  }
+
+  return latest == null ? null : new Date(latest);
+}
+
 const toNum = (v) =>
   v == null ? NaN : Number(String(v).replace(/[^\d.-]/g, ""));
 
@@ -110,10 +138,9 @@ async function getServerSideProps(ctx) {
   await dbConnect();
 
   const categoryList = [
-    // { categoryName: "전체", categoryId: null },
     { categoryName: "음식", categoryId: "2" },
     { categoryName: "가전제품", categoryId: "6" },
-    { categoryName: "태블릿", categoryId: "200001086" },
+    // { categoryName: "태블릿", categoryId: "200001086" },
     // { categoryName: "문구", categoryId: "21" },
     // { categoryName: "생활용품", categoryId: "13" },
     // { categoryName: "주방용품", categoryId: "200000920" },
@@ -172,6 +199,14 @@ async function getServerSideProps(ctx) {
 
             // 최신가가 기간 최저가와 같지 않으면 제거
             if (Number(latestSale) !== Number(lowestSale)) return null;
+
+            const latestPdAt = getLatestPdTime(sku?.pd);
+            const now = new Date();
+            const newerThan4d =
+              latestPdAt &&
+              now.getTime() - latestPdAt.getTime() <= FOUR_DAYS_MS;
+
+            if (!newerThan4d) return null;
 
             // ★ 평균 판매가 계산
             const avgSale = avgSaleFromPd(sku?.pd, start, end);
@@ -238,14 +273,20 @@ async function getServerSideProps(ctx) {
               end
             );
 
-            // 기간 내 포인트 없거나 flat 제거
+            // 기존 조건
             if (lowestSale == null || latestSale == null) return null;
             if (isFlat) return null;
 
-            // 필요 시 제품 내부용 데이터 유지하려면 리턴 유지
-            return {
-              sId: sku?.sId,
-            };
+            // 추가 조건: 현재 기준 4일 이내에 업데이트 되었는지 체크
+            const latestPdAt = getLatestPdTime(sku?.pd);
+            const now = new Date();
+            const newerThan4d =
+              latestPdAt &&
+              now.getTime() - latestPdAt.getTime() <= FOUR_DAYS_MS;
+
+            if (!newerThan4d) return null;
+
+            return { sId: sku?.sId };
           })
           .filter(Boolean);
 
@@ -273,14 +314,20 @@ async function getServerSideProps(ctx) {
               end
             );
 
-            // 기간 내 포인트 없거나 flat 제거
+            // 기존 조건
             if (lowestSale == null || latestSale == null) return null;
             if (isFlat) return null;
 
-            // 필요 시 제품 내부용 데이터 유지하려면 리턴 유지
-            return {
-              sId: sku?.sId,
-            };
+            // 추가 조건: 현재 기준 4일 이내에 업데이트 되었는지 체크
+            const latestPdAt = getLatestPdTime(sku?.pd);
+            const now = new Date();
+            const newerThan4d =
+              latestPdAt &&
+              now.getTime() - latestPdAt.getTime() <= FOUR_DAYS_MS;
+
+            if (!newerThan4d) return null;
+
+            return { sId: sku?.sId };
           })
           .filter(Boolean);
 
@@ -295,6 +342,8 @@ async function getServerSideProps(ctx) {
       .filter(Boolean);
     // 평점 높은 순서 리스트
 
+    // ── psList 생성: 최신 pd가 '현재 기준 4일 이내'만 통과
+    // ── psList 생성: 최신 pd가 '현재 기준 4일 이내'만 통과
     const psList = raw
       .map((doc) => {
         const sil = doc?.sku_info?.sil || [];
@@ -307,14 +356,20 @@ async function getServerSideProps(ctx) {
               end
             );
 
-            // 기간 내 포인트 없거나 flat 제거
+            // 기존 조건
             if (lowestSale == null || latestSale == null) return null;
             if (isFlat) return null;
 
-            // 필요 시 제품 내부용 데이터 유지하려면 리턴 유지
-            return {
-              sId: sku?.sId,
-            };
+            // 추가 조건: 현재 기준 4일 이내에 업데이트 되었는지 체크
+            const latestPdAt = getLatestPdTime(sku?.pd);
+            const now = new Date();
+            const newerThan4d =
+              latestPdAt &&
+              now.getTime() - latestPdAt.getTime() <= FOUR_DAYS_MS;
+
+            if (!newerThan4d) return null;
+
+            return { sId: sku?.sId };
           })
           .filter(Boolean);
 
@@ -322,14 +377,18 @@ async function getServerSideProps(ctx) {
 
         return {
           _id: doc._id,
-          // 필요하면 sku_filtered를 보존:
           ps: doc.ps,
+          // sku: sku_filtered, // 필요하면 주석 해제
         };
       })
       .filter(Boolean);
 
     const psTop100 = psList
-      .sort((a, b) => b.ps - a.ps)
+      .sort((a, b) => {
+        // console.log("b:", b);
+        return b.ps - a.ps;
+      })
+
       .slice(0, 100)
       .map((item) => {
         allProductPsList.push(item);

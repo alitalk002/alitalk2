@@ -728,8 +728,14 @@ async function fetchByCategory({ categoryId }) {
           const skuMap1 = new Map();
           const skuMap2 = new Map();
           for (const sku of sil) {
-            const k = toKey(sku?.sId, sku?.c, canonSkuProps(sku?.sp));
-            const j = toKey(sku?.sId, sku?.c, normalizeSpForCompare(sku?.sp));
+            const k = toKey(
+              normalizeCForCompare(sku?.c),
+              canonSkuProps(sku?.sp)
+            );
+            const j = toKey(
+              normalizeCForCompare(sku?.c),
+              normalizeSpForCompare(sku?.sp)
+            );
 
             skuMap1.set(k, sku);
             skuMap2.set(j, sku);
@@ -748,8 +754,7 @@ async function fetchByCategory({ categoryId }) {
               continue;
             }
             const key1 = toKey(
-              sid,
-              item?.color,
+              normalizeCForCompare(item?.color),
               canonSkuProps(item?.sku_properties)
             );
 
@@ -759,7 +764,7 @@ async function fetchByCategory({ categoryId }) {
             if (!exist1) {
               const SPKEY = normalizeSpForCompare(item?.sku_properties);
 
-              const key2 = toKey(sid, item?.color, SPKEY);
+              const key2 = toKey(normalizeCForCompare(item?.color), SPKEY);
               const exist2 = skuMap2.get(key2);
 
               if (!exist2) {
@@ -850,12 +855,12 @@ async function fetchByCategory({ categoryId }) {
                   {
                     "e.sId": sId,
                     $and: [
-                      // {
-                      //   $or: [
-                      //     { "e.c": cNorm },
-                      //     { "e.c": { $regex: cRegex, $options: "x" } },
-                      //   ],
-                      // },
+                      {
+                        $or: [
+                          { "e.c": cNorm },
+                          { "e.c": { $regex: cRegex, $options: "x" } },
+                        ],
+                      },
                       {
                         $or: [
                           { "e.spKey": spKey },
@@ -908,12 +913,12 @@ async function fetchByCategory({ categoryId }) {
                   {
                     "e.sId": sId,
                     $and: [
-                      // {
-                      //   $or: [
-                      //     { "e.c": cNorm },
-                      //     { "e.c": { $regex: cRegex, $options: "x" } },
-                      //   ],
-                      // },
+                      {
+                        $or: [
+                          { "e.c": cNorm },
+                          { "e.c": { $regex: cRegex, $options: "x" } },
+                        ],
+                      },
                       {
                         $or: [
                           { "e.spKey": spKey },
