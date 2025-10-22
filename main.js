@@ -459,13 +459,13 @@ async function fetchByCategory({ categoryId }) {
 
   const productCategories = await ProductCategories.find();
   const total = productCategories.length;
-  const baseSize = Math.floor(total / 14); // 기본 크기
-  let remainder = total % 14; // 남는 개수
+  const baseSize = Math.floor(total / 13); // 기본 크기
+  let remainder = total % 13; // 남는 개수
 
   const divided = [];
   let start = 0;
 
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < 13; i++) {
     // 나머지가 남아있으면 이 그룹은 +1개 더 받음
     const extra = remainder > 0 ? 1 : 0;
     const end = start + baseSize + extra;
@@ -479,47 +479,51 @@ async function fetchByCategory({ categoryId }) {
 
   const listTasks = { item: [], dataBaseRes: [] };
 
-  const categoryRes = divided[1].map((item) =>
-    limit(async () => {
-      const cat = await ProductCategories.findOne({
-        cId: String(item.cId),
-      });
+  // ---- divided[1]은 2개로 나눠서 배포
 
-      if (!cat?._id) {
-        console.log("카테고리 없음:", item.cId);
-        return;
-      }
+  const categoryRes = divided[1]
+    .slice(0, Math.round(divided[1].length / 2))
+    .map((item) =>
+      limit(async () => {
+        const cat = await ProductCategories.findOne({
+          cId: String(item.cId),
+        });
 
-      let res = await ProductDetail.find({ cId1: cat._id })
-        .populate("cId1", "cId cn")
-        .populate("cId2", "cId cn")
-        .lean({ virtuals: true });
+        if (!cat?._id) {
+          console.log("카테고리 없음:", item.cId);
+          return;
+        }
 
-      if (!res?.length) {
-        res = await ProductDetail.find({ cId2: cat._id })
+        let res = await ProductDetail.find({ cId1: cat._id })
           .populate("cId1", "cId cn")
           .populate("cId2", "cId cn")
           .lean({ virtuals: true });
-      }
 
-      const { items, raw, serverCount, filteredCount, note } =
-        await fetchByCategory({
-          categoryId: item.cId,
-        });
+        if (!res?.length) {
+          res = await ProductDetail.find({ cId2: cat._id })
+            .populate("cId1", "cId cn")
+            .populate("cId2", "cId cn")
+            .lean({ virtuals: true });
+        }
 
-      console.log("cid:", item.cId);
-      console.log("items:", items.length);
-      console.log("res:", res.length);
+        const { items, raw, serverCount, filteredCount, note } =
+          await fetchByCategory({
+            categoryId: item.cId,
+          });
 
-      listTasks.item.push(...items);
-      listTasks.dataBaseRes.push(...res);
-    })
-  );
+        console.log("cid:", item.cId);
+        console.log("items:", items.length);
+        console.log("res:", res.length);
+
+        listTasks.item.push(...items);
+        listTasks.dataBaseRes.push(...res);
+      })
+    );
 
   await Promise.allSettled(categoryRes, listTasks);
 
   // const categoryRes = async () => {
-  //   let res = await ProductDetail.find({ _id: "1005006904659296" })
+  //   let res = await ProductDetail.find({ _id: "1005007938045626" })
   //     .populate("cId1", "cId cn")
   //     .populate("cId2", "cId cn")
   //     .lean({ virtuals: true });
@@ -711,13 +715,18 @@ async function fetchByCategory({ categoryId }) {
 
           const toNum = (v) => (v == null ? NaN : +v);
           const safeNorm = (v) => norm(v ?? "");
-          // const toKey = (sid, color, props) =>
-          //   `${String(sid)}\u0001${normalizeCForCompare(
-          //     color
-          //   )}\u0001${normalizeSpForCompare(props)}`;
-          const toKey = (sid, color, props) =>
+          const toKey1 = (color, props) =>
+            `\u0001${normalizeCForCompare(color)}\u0001${normalizeSpForCompare(
+              props
+            )}`;
+          const toKey2 = (color, props) =>
+            `\u0001${normalizeCForCompare(color)}\u0001${canonSkuProps(props)}`;
+          const toKey3 = (sid, color, props) =>
             `${String(sid)}
             \u0001${normalizeSpForCompare(props)}`;
+          const toKey4 = (sid, color, props) =>
+            `${String(sid)}
+            \u0001${canonSkuProps(props)}`;
 
           // 필요한 필드만
 
@@ -727,18 +736,18 @@ async function fetchByCategory({ categoryId }) {
           );
           const skuMap1 = new Map();
           const skuMap2 = new Map();
+          const skuMap3 = new Map();
+          const skuMap4 = new Map();
           for (const sku of sil) {
-            const k = toKey(
-              normalizeCForCompare(sku?.c),
-              canonSkuProps(sku?.sp)
-            );
-            const j = toKey(
-              normalizeCForCompare(sku?.c),
-              normalizeSpForCompare(sku?.sp)
-            );
+            const i = toKey1(sku?.c, sku?.sp);
+            const j = toKey2(sku?.c, sku?.sp);
+            const k = toKey2(sku?.sId, sku?.sp);
+            const z = toKey2(sku?.sId, sku?.sp);
 
-            skuMap1.set(k, sku);
+            skuMap1.set(i, sku);
             skuMap2.set(j, sku);
+            skuMap3.set(k, sku);
+            skuMap4.set(z, sku);
           }
 
           const newSkus = [];
@@ -753,23 +762,27 @@ async function fetchByCategory({ categoryId }) {
               newSkus.push(item);
               continue;
             }
-            const key1 = toKey(
-              normalizeCForCompare(item?.color),
-              canonSkuProps(item?.sku_properties)
-            );
+            const key1 = toKey1(item?.color, item?.sku_properties);
 
             const exist1 = skuMap1.get(key1);
             // console.log("exist1:", exist1);
 
             if (!exist1) {
-              const SPKEY = normalizeSpForCompare(item?.sku_properties);
-
-              const key2 = toKey(normalizeCForCompare(item?.color), SPKEY);
+              const key2 = toKey2(item?.color, item?.sku_properties);
               const exist2 = skuMap2.get(key2);
 
               if (!exist2) {
-                newSkus.push(item);
-                continue;
+                const key3 = toKey3(sid, item?.sku_properties);
+                const exist3 = skuMap3.get(key3);
+
+                if (!exist3) {
+                  const key4 = toKey4(sid, item?.sku_properties);
+                  const exist4 = skuMap4.get(key4);
+                  if (!exist4) {
+                    newSkus.push(item);
+                    continue;
+                  }
+                }
               }
             }
             // 문제 지점 전후로 세분화 try-catch
