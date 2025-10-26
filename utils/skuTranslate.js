@@ -58,6 +58,12 @@ export const VALUE_MAP = {
   와인: "빨강",
   버건디: "빨강",
 
+  "light red": "밝은 빨강",
+  "라이트 빨강": "밝은 빨강",
+  lightred: "밝은 빨강",
+  "다크 빨강": "어두운 빨강",
+  darkred: "어두운 빨강",
+
   // ── 주황
   orange: "주황",
   tangerine: "주황",
@@ -70,6 +76,13 @@ export const VALUE_MAP = {
   코랄: "주황",
   살몬: "주황",
 
+  "light orange": "밝은 주황",
+  "라이트 오렌지": "밝은 주황",
+  lightorange: "밝은 주황",
+  "dark orange": "어두운 주황",
+  "다크 오렌지": "어두운 주황",
+  darkorange: "어두운 주황",
+
   // ── 노랑
   yellow: "노랑",
   amber: "노랑",
@@ -81,6 +94,13 @@ export const VALUE_MAP = {
   노랑: "노랑",
   노란색: "노랑",
   머스타드: "노랑",
+
+  lightyellow: "밝은 노랑",
+  "light yellow": "밝은 노랑",
+  "라이트 옐로우": "밝은 노랑",
+  darkyellow: "어두운 노랑",
+  "dark yellow": "어두운 노랑",
+  "다크 옐로우": "어두운 노랑",
 
   // ── 초록
   green: "초록",
@@ -96,8 +116,13 @@ export const VALUE_MAP = {
   올리브색: "초록",
   라임: "초록",
   라임색: "초록",
+
   "라이트 그린": "밝은 초록색",
   "light green": "밝은 초록색",
+  lightgreen: "밝은 초록색",
+  darkgreen: "어두운 초록색",
+  "dark green": "어두운 초록색",
+  "다크 그린": "어두운 초록색",
 
   // ── 청록
   mint: "청록",
@@ -130,6 +155,13 @@ export const VALUE_MAP = {
   코발트: "파랑",
   코발트색: "파랑",
 
+  "라이트 블루": "밝은 파랑",
+  "light blue": "밝은 파랑",
+  lightblue: "밝은 파랑",
+  darkblue: "어두운 파랑",
+  "dark blue": "어두운 파랑",
+  "다크 블루": "어두운 파랑",
+
   // ── 남색
   navy: "남색",
   indigo: "남색",
@@ -154,11 +186,18 @@ export const VALUE_MAP = {
   보라: "보라",
   보라색: "보라",
 
+  "라이트 보라": "밝은 보라",
+  "light purple": "밝은 보라",
+  lightpurple: "밝은 보라",
+  darkpurple: "어두운 보라",
+  "dark purple": "어두운 보라",
+  "다크 보라": "어두운 보라",
+
   // ── 분홍
   pink: "분홍",
   fuchsia: "분홍",
   magenta: "분홍",
-  "hot pink": "분홍",
+  "hot pink": "진한 분홍",
   rose: "분홍",
   핑크: "분홍",
   분홍: "분홍",
@@ -167,6 +206,13 @@ export const VALUE_MAP = {
   로즈색: "분홍",
   핫핑크: "분홍",
   핫핑크색: "분홍",
+
+  "라이트 분홍": "밝은 분홍",
+  "light pink": "밝은 분홍",
+  lightpink: "밝은 분홍",
+  darkpink: "어두운 분홍",
+  "dark pink": "어두운 분홍",
+  "다크 분홍": "어두운 분홍",
 
   // ── 갈색
   brown: "갈색",
@@ -182,6 +228,13 @@ export const VALUE_MAP = {
   카멜색: "갈색",
   코코아: "갈색",
   코코아색: "갈색",
+
+  "라이트 갈색": "밝은 갈색",
+  "light brown": "밝은 갈색",
+  lightbrown: "밝은 갈색",
+  darkbrown: "어두운 갈색",
+  "dark brown": "어두운 갈색",
+  "다크 갈색": "어두운 갈색",
 
   // ── 베이지
   beige: "베이지",
@@ -201,6 +254,13 @@ export const VALUE_MAP = {
   카키: "베이지",
   카키색: "베이지",
 
+  "라이트 베이지": "밝은 베이지",
+  "light beige": "밝은 베이지",
+  lightbeige: "밝은 베이지",
+  darkbeige: "어두운 베이지",
+  "dark beige": "어두운 베이지",
+  "다크 베이지": "어두운 베이지",
+
   // ── 메탈릭
   금: "금색",
   gold: "금색",
@@ -219,11 +279,15 @@ export const VALUE_MAP = {
   투명: "투명",
   투명색: "투명",
 
+  "no box": "no box",
+
   // 일상 단어
   그렇습니다: "예",
+  그러합니다: "예",
   그래요: "예",
   yes: "예",
   아닙니다: "아니요",
+  아니에요: "아니요",
   아니오: "아니요",
   no: "아니요",
 
@@ -235,6 +299,8 @@ export const VALUE_MAP = {
   Color: "색상",
   색깔: "색상",
   색: "색상",
+
+  other: "기타",
 };
 
 // ────────────────────────────────────────────────────────────────

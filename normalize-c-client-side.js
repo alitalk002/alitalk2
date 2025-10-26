@@ -3,8 +3,71 @@ import mongoose from "mongoose";
 import ProductDetail from "./models/ProductDetail.js";
 import { normalizeCForCompare } from "./utils/normalize.js";
 import dbConnect from "./utils/dbConnect.js";
+import { VALUE_MAP } from "./utils/skuTranslate.js";
 
 // 안전한 bulkWrite 커밋 함수 (작은 청크로 폴백)
+const norm = (v) =>
+  (v ?? "") // null/undefined 방어
+    .toString() // 문자열화
+    .replace(/[\s\u200B-\u200D\uFEFF]/g, ""); // 일반 공백 + 제로폭 공백 제거
+
+const parseSkuProps = (val) => {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  if (typeof val === "string") {
+    try {
+      const arr = JSON.parse(val);
+      return Array.isArray(arr) ? arr : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
+const isEmptyProps = (arr) =>
+  !arr ||
+  arr.length === 0 ||
+  (arr.length === 1 && Object.keys(arr[0] || {}).length === 0);
+
+// 키 동의어: '색깔' → '색상'
+const KEY_SYNONYM = Object.freeze({
+  색깔: "색상",
+});
+
+const canonSkuProps = (arr) => {
+  const a = parseSkuProps(arr);
+  if (isEmptyProps(a)) return "";
+
+  const canonArr = a.map((obj) => {
+    // 1) 키/값 정규화 + 동의어 치환 (키/값 모두 KEY_SYNONYM 사용)
+    const pairs = [];
+    for (const [k, v] of Object.entries(obj || {})) {
+      const kNorm = norm(k);
+      const kMapped = VALUE_MAP[k] ?? VALUE_MAP[kNorm] ?? kNorm;
+
+      const vRaw = String(v).trim();
+      const vNorm = norm(vRaw);
+      const vMapped = VALUE_MAP[vRaw] ?? VALUE_MAP[vNorm] ?? vNorm;
+
+      pairs.push([kMapped, vMapped]);
+    }
+
+    // 2) 키 정렬(직렬화 안정화)
+    pairs.sort(([k1], [k2]) => (k1 > k2 ? 1 : k1 < k2 ? -1 : 0));
+
+    // 3) 동의어 치환으로 생긴 중복 키 병합(첫 값 우선)
+    const merged = {};
+    for (const [k, v] of pairs) {
+      if (!(k in merged)) merged[k] = v;
+    }
+
+    return merged;
+  });
+
+  return JSON.stringify(canonArr);
+};
+
 async function commitBulk(ops, { ordered = false } = {}) {
   if (!ops.length) return { matchedCount: 0, modifiedCount: 0 };
 
@@ -38,7 +101,12 @@ async function main() {
   await dbConnect();
 
   // lean() + 최소 필드만
-  const cursor = ProductDetail.find({}, { "sku_info.sil": 1 }).lean().cursor();
+  const cursor = ProductDetail.find(
+    { _id: "1005007938045626" },
+    { "sku_info.sil": 1 }
+  )
+    .lean()
+    .cursor();
 
   const BATCH_LIMIT = 100; // 1000 -> 100 으로 축소
   let ops = [];
@@ -54,10 +122,10 @@ async function main() {
 
     // orig는 lean이므로 plain object
     const nextSil = orig.map((it) => {
-      const before = it?.c ?? "";
-      const after = normalizeCForCompare(before);
+      const before = it?.sp ?? "";
+      const after = canonSkuProps(before);
       if (before !== after) touched = true;
-      return { ...it, c: after };
+      return { ...it, sp: after };
     });
 
     if (!touched) continue;

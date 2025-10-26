@@ -43,13 +43,6 @@ const toNumber = (v) =>
 // 날짜별 가격 포인트 (저장 키: p, s, t)
 const PricePointSchema = new mongoose.Schema(
   {
-    p: {
-      type: mongoose.Schema.Types.Int32,
-      min: 0,
-      required: true,
-      alias: "price_with_tax",
-      set: toNumber,
-    },
     s: {
       type: mongoose.Schema.Types.Int32,
       min: 0,
@@ -76,7 +69,6 @@ const SkuInfoItemSchema = new mongoose.Schema(
   {
     sId: { type: String, required: true, alias: "sku_id" },
     c: { type: String, default: "", alias: "color", set: normalizeCForCompare },
-    link: { type: String, required: true },
     sp: {
       type: String,
       default: "",
@@ -154,7 +146,6 @@ const ProductDetailSchema = new mongoose.Schema(
     },
 
     tt: { type: String, required: true, alias: "title" },
-    st: { type: String, required: true, alias: "store_name" },
 
     ps: {
       type: Number,

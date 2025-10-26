@@ -480,9 +480,11 @@ async function fetchByCategory({ categoryId }) {
   const listTasks = { item: [], dataBaseRes: [] };
 
   // ---- divided[1]은 2개로 나눠서 배포
+  //  slice(0, Math.round(divided[1].length))
+  // slice(Math.round(divided[1].length / 2), Math.round(divided[1].length))
 
-  const categoryRes = divided[1]
-    .slice(0, Math.round(divided[1].length / 2))
+  const categoryRes = divided[0]
+    .slice(0, Math.round(divided[1].length))
     .map((item) =>
       limit(async () => {
         const cat = await ProductCategories.findOne({
@@ -650,9 +652,6 @@ async function fetchByCategory({ categoryId }) {
           if (info.title && stripForCompare(info.title) !== "") {
             baseDoc.tt = info.title;
           }
-          if (info.store_name && stripForCompare(info.store_name) !== "") {
-            baseDoc.st = info.store_name;
-          }
           if (info.product_score && Number(info.product_score) !== 0) {
             baseDoc.ps = info.product_score;
           }
@@ -692,13 +691,11 @@ async function fetchByCategory({ categoryId }) {
             return {
               sId: String(s.sku_id), // 문자열로 통일
               c: normalizeCForCompare(s.color ?? ""), // 정규화 통일
-              link: s.link ?? "",
               sp: canonSkuProps(s.sku_properties ?? ""), // 정규화 통일
               spKey: normalizeSpForCompare(s.sku_properties ?? ""), // 정규화 통일
               cur: s.currency ?? "KRW",
               pd: {
                 [todayKey]: {
-                  p: Number(s.price_with_tax),
                   s: Number(s.sale_price_with_tax ?? 1),
                   t: new Date(),
                 },

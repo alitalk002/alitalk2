@@ -614,11 +614,11 @@ async function main1() {
   }
 
   console.log("\n===== SUMMARY =====");
-  console.log(`Visited docs : ${visited2}`);
-  console.log(`Changed docs : ${changedDocs2}`);
-  console.log(`Rows deleted : ${totalRowsDeleted2}`);
-  console.log(`pd added (keys): ${totalPdAdded2}`);
-  console.log(`Groups merged : ${totalGroupsMerged2}`);
+  console.log(`Visited docs : ${visited1}`);
+  console.log(`Changed docs : ${changedDocs1}`);
+  console.log(`Rows deleted : ${totalRowsDeleted1}`);
+  console.log(`pd added (keys): ${totalPdAdded1}`);
+  console.log(`Groups merged : ${totalGroupsMerged1}`);
   console.log(` Mode : ${dryRun ? "DRY-RUN (no save)" : "APPLY (saved)"}`);
 
   await mongoose.connection.close();
