@@ -459,13 +459,13 @@ async function fetchByCategory({ categoryId }) {
 
   const productCategories = await ProductCategories.find();
   const total = productCategories.length;
-  const baseSize = Math.floor(total / 13); // 기본 크기
-  let remainder = total % 13; // 남는 개수
+  const baseSize = Math.floor(total / 14); // 기본 크기
+  let remainder = total % 14; // 남는 개수
 
   const divided = [];
   let start = 0;
 
-  for (let i = 0; i < 13; i++) {
+  for (let i = 0; i < 14; i++) {
     // 나머지가 남아있으면 이 그룹은 +1개 더 받음
     const extra = remainder > 0 ? 1 : 0;
     const end = start + baseSize + extra;
@@ -483,7 +483,7 @@ async function fetchByCategory({ categoryId }) {
   //  slice(0, Math.round(divided[1].length))
   // slice(Math.round(divided[1].length / 2), Math.round(divided[1].length))
 
-  const categoryRes = divided[1]
+  const categoryRes = divided[9]
     .slice(0, Math.round(divided[1].length))
     .map((item) =>
       limit(async () => {
