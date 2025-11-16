@@ -33,7 +33,7 @@ const TRACKING_ID = process.env.AE_TRACKING_ID;
 const USE_SYNONYM_MAP = true;
 const SYNONYM_KEY_MAP = { 색깔: "색상" };
 
-const limit = pLimit(10); // 동시에 7개만 실행
+const limit = pLimit(5); // 동시에 7개만 실행
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  실패 무해 try/catch, 배열 정규화
@@ -352,17 +352,16 @@ function parseProducts(raw) {
 function normalize(p) {
   return {
     _id: p.product_id,
-    title: p.product_title,
-    price: p.target_app_sale_price,
-    currency: p.target_app_sale_price_currency,
-    image: p.product_main_image_url,
+    // title: p.product_title,
+    // price: p.target_app_sale_price,
+    // currency: p.target_app_sale_price_currency,
+    // image: p.product_main_image_url,
     promotion_link: p.promotion_link,
-    c1_id: p.first_level_category_id,
-    c1_name: p.first_level_category_name,
-    c2_id: p.second_level_category_id,
-    c2_name: p.second_level_category_name,
+    // c1_id: p.first_level_category_id,
+    // c1_name: p.first_level_category_name,
+    // c2_id: p.second_level_category_id,
+    // c2_name: p.second_level_category_name,
     volume: p.lastest_volume,
-    reviews: p.review_count,
   };
 }
 
@@ -392,8 +391,8 @@ async function fetchByCategory({ categoryId }) {
       sort: "LAST_VOLUME_DESC",
       fields: FIELDS,
       // 카테고리: 서버가 먹는 키를 모두 전달
-      category_ids: String(categoryId),
-      category_id: String(categoryId),
+      // category_ids: String(categoryId),
+      // category_id: String(categoryId),
       // keywords: "", // 섞임 방지로 비움
     };
     params.sign = signSha256(params, APP_SECRET);
@@ -480,11 +479,19 @@ async function fetchByCategory({ categoryId }) {
   const listTasks = { item: [], dataBaseRes: [] };
 
   // ---- divided[1]은 2개로 나눠서 배포
-  //  slice(0, Math.round(divided[1].length) / 2 )
+  //  slice(0, Math.round(divided[1].length))
   // slice(Math.round(divided[1].length / 2), Math.round(divided[1].length))
 
+  // ---- divided[5]은 3개로 나눠서 배포
+  // slice(0, Math.round(divided[5].length / 3));
+  // slice(
+  //   Math.round(divided[5].length / 3),
+  //   2 * Math.round(divided[5].length / 3)
+  // );
+  // slice(2 * Math.round(divided[5].length / 3), Math.round(divided[5].length));
+
   const categoryRes = divided[1]
-    .slice(0, Math.round(divided[1].length) / 2)
+    .slice(0, Math.round(divided[1].length))
     .map((item) =>
       limit(async () => {
         const cat = await ProductCategories.findOne({
@@ -499,13 +506,15 @@ async function fetchByCategory({ categoryId }) {
         let res = await ProductDetail.find({ cId1: cat._id })
           .populate("cId1", "cId cn")
           .populate("cId2", "cId cn")
-          .lean({ virtuals: true });
+          .select("_id vol pl ")
+          .lean();
 
         if (!res?.length) {
           res = await ProductDetail.find({ cId2: cat._id })
             .populate("cId1", "cId cn")
             .populate("cId2", "cId cn")
-            .lean({ virtuals: true });
+            .select("_id vol pl ")
+            .lean();
         }
 
         const { items, raw, serverCount, filteredCount, note } =
@@ -515,14 +524,18 @@ async function fetchByCategory({ categoryId }) {
 
         console.log("cid:", item.cId);
         console.log("items:", items.length);
-        console.log("res:", res.length);
+        console.log("res:", res[0]);
+
+        // fetchByCategory안에 filtered 변수도 볼 것 !
+
+        // fetchByCategory 에서 요청을 volume 이 170 이상인것만 받아옴 수정할려면 normalize함수 볼 것
 
         listTasks.item.push(...items);
         listTasks.dataBaseRes.push(...res);
       })
     );
 
-  await Promise.allSettled(categoryRes, listTasks);
+  await Promise.allSettled(categoryRes);
 
   // const categoryRes = async () => {
   //   let res = await ProductDetail.find({ _id: "1005007938045626" })
@@ -543,7 +556,7 @@ async function fetchByCategory({ categoryId }) {
   console.log("dataBaseRes", listTasks.dataBaseRes.length);
   console.log("item", listTasks.item.length);
 
-  const items = (listTasks.item ?? []).filter((p) => Number(p?.volume) >= 200);
+  const items = (listTasks.item ?? []).filter((p) => Number(p?.volume) >= 170);
   const dbs = listTasks.dataBaseRes ?? [];
 
   const merged = [
@@ -751,32 +764,32 @@ async function fetchByCategory({ categoryId }) {
           const updSkus = [];
           const lowPriceUpdSkus = [];
 
-          for (const item of skuList) {
-            const sid = String(item?.sku_id);
+          for (const item1 of skuList) {
+            const sid = String(item1?.sku_id);
             if (sid == null) continue;
 
             if (!existingIds.has(sid)) {
-              newSkus.push(item);
+              newSkus.push(item1);
               continue;
             }
-            const key1 = toKey1(item?.color, item?.sku_properties);
+            const key1 = toKey1(item1?.color, item?.sku_properties);
 
             const exist1 = skuMap1.get(key1);
             // console.log("exist1:", exist1);
 
             if (!exist1) {
-              const key2 = toKey2(item?.color, item?.sku_properties);
+              const key2 = toKey2(item1?.color, item1?.sku_properties);
               const exist2 = skuMap2.get(key2);
 
               if (!exist2) {
-                const key3 = toKey3(sid, item?.sku_properties);
+                const key3 = toKey3(sid, item1?.sku_properties);
                 const exist3 = skuMap3.get(key3);
 
                 if (!exist3) {
-                  const key4 = toKey4(sid, item?.sku_properties);
+                  const key4 = toKey4(sid, item1?.sku_properties);
                   const exist4 = skuMap4.get(key4);
                   if (!exist4) {
-                    newSkus.push(item);
+                    newSkus.push(item1);
                     continue;
                   }
                 }
@@ -785,7 +798,7 @@ async function fetchByCategory({ categoryId }) {
             // 문제 지점 전후로 세분화 try-catch
             let incomingSale;
             try {
-              incomingSale = toNum(item?.sale_price_with_tax ?? null);
+              incomingSale = toNum(item1?.sale_price_with_tax ?? null);
               // incomingSale = toNum(1 ?? null);
             } catch (e) {
               throw e;
@@ -800,10 +813,10 @@ async function fetchByCategory({ categoryId }) {
 
             if (docToday) {
               if (docSale > incomingSale) {
-                lowPriceUpdSkus.push(item);
+                lowPriceUpdSkus.push(item1);
               }
             } else {
-              updSkus.push(item);
+              updSkus.push(item1);
             }
           }
 
