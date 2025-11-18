@@ -2,7 +2,7 @@ name: Run Playwright Crawler Daily
 
 on:
   schedule:
-    - cron: "30 */8 * * *" # 실행 시각(KST): 09:30, 15:30, 21:30, 03:30(+1일)
+    - cron: "30 */6 * * *" # 실행 시각(KST): 09:30, 15:30, 21:30, 03:30(+1일)
   workflow_dispatch:
 
 jobs:
