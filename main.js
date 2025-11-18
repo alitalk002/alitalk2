@@ -33,7 +33,7 @@ const TRACKING_ID = process.env.AE_TRACKING_ID;
 const USE_SYNONYM_MAP = true;
 const SYNONYM_KEY_MAP = { 색깔: "색상" };
 
-const limit = pLimit(5); // 동시에 7개만 실행
+const limit = pLimit(8); // 동시에 8개만 실행
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  실패 무해 try/catch, 배열 정규화
