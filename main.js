@@ -506,14 +506,14 @@ async function fetchByCategory({ categoryId }) {
         let res = await ProductDetail.find({ cId1: cat._id })
           .populate("cId1", "cId cn")
           .populate("cId2", "cId cn")
-          .select("_id vol pl ")
+          .select("_id vol  ")
           .lean();
 
         if (!res?.length) {
           res = await ProductDetail.find({ cId2: cat._id })
             .populate("cId1", "cId cn")
             .populate("cId2", "cId cn")
-            .select("_id vol pl ")
+            .select("_id vol  ")
             .lean();
         }
 
@@ -524,7 +524,7 @@ async function fetchByCategory({ categoryId }) {
 
         console.log("cid:", item.cId);
         console.log("items:", items.length);
-        console.log("res:", res[0]);
+        console.log("res:", res.length);
 
         // fetchByCategory안에 filtered 변수도 볼 것 !
 
