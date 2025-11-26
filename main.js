@@ -22,6 +22,7 @@ import {
   normalizeSpForCompare,
   stripForCompare,
 } from "./utils/normalize.js";
+import { withRetry } from "./utils/withRetry.js";
 
 const API = "https://api-sg.aliexpress.com/sync";
 const METHOD = "aliexpress.affiliate.product.query";
@@ -33,7 +34,7 @@ const TRACKING_ID = process.env.AE_TRACKING_ID;
 const USE_SYNONYM_MAP = true;
 const SYNONYM_KEY_MAP = { 색깔: "색상" };
 
-const limit = pLimit(8); // 동시에 8개만 실행
+const limit = pLimit(10); // 동시에 10개만 실행
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  실패 무해 try/catch, 배열 정규화
@@ -228,12 +229,6 @@ const FIELDS = [
 ].join(",");
 
 // ───────────────────────── 재시도 유틸 ─────────────────────────
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-function calcDelay({ base, factor, attempt, jitter, max }) {
-  const backoff = Math.min(base * Math.pow(factor, attempt), max);
-  const rand = 1 + (Math.random() * 2 - 1) * jitter; // 1±jitter
-  return Math.round(backoff * rand);
-}
 
 /**
  * fetch → JSON 파싱까지 포함한 재시도 래퍼
@@ -301,28 +296,28 @@ async function fetchJsonWithRetry(
 /**
  * 임의 함수 재시도(예: getSkuDetail)
  */
-async function withRetry(fn, opts = {}) {
-  const {
-    retries = 3,
-    base = 800,
-    factor = 2,
-    jitter = 0.3,
-    max = 10000,
-  } = opts;
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    try {
-      return await fn();
-    } catch (err) {
-      const code = err?.cause?.code || err?.code;
-      const transient =
-        code === "ECONNRESET" || code === "ETIMEDOUT" || code === "EAI_AGAIN";
-      if (!transient && attempt === 0) throw err; // 비일시적이면 즉시
-      if (attempt === retries) throw err;
-      const delay = calcDelay({ base, factor, attempt, jitter, max });
-      await sleep(delay);
-    }
-  }
-}
+// export async function withRetry(fn, opts = {}) {
+//   const {
+//     retries = 3,
+//     base = 800,
+//     factor = 2,
+//     jitter = 0.3,
+//     max = 10000,
+//   } = opts;
+//   for (let attempt = 0; attempt <= retries; attempt++) {
+//     try {
+//       return await fn();
+//     } catch (err) {
+//       const code = err?.cause?.code || err?.code;
+//       const transient =
+//         code === "ECONNRESET" || code === "ETIMEDOUT" || code === "EAI_AGAIN";
+//       if (!transient && attempt === 0) throw err; // 비일시적이면 즉시
+//       if (attempt === retries) throw err;
+//       const delay = calcDelay({ base, factor, attempt, jitter, max });
+//       await sleep(delay);
+//     }
+//   }
+// }
 
 function signSha256(params, secret) {
   const base = Object.keys(params)
@@ -478,20 +473,25 @@ async function fetchByCategory({ categoryId }) {
 
   const listTasks = { item: [], dataBaseRes: [] };
 
-  // ---- divided[1]은 2개로 나눠서 배포
-  //  slice(0, Math.round(divided[1].length / 2))
-  // slice(Math.round(divided[1].length / 2), Math.round(divided[1].length))
+  // ---- divided[1]은 3개로 나눠서 배포
+  //  .slice(0,Math.round(divided[1].length)/3)
+  //  .slice(Math.round(( divided[1].length) / 3),Math.round(2*divided[1].length)/3)
+  //  .slice(Math.round((2 * divided[1].length) / 3),Math.round(divided[1].length))
+
+  // divided[2]은 2개로 나눠서 배포
+  //  .slice(0, Math.round(divided[2].length / 2))
+  //  .slice(Math.round(divided[2].length / 2), Math.round(divided[2].length )
 
   // ---- divided[5]은 3개로 나눠서 배포
-  // slice(0, Math.round(divided[5].length / 3));
-  // slice(
+  // .slice(0, Math.round(divided[5].length / 3));
+  // .slice(
   //   Math.round(divided[5].length / 3),
   //   2 * Math.round(divided[5].length / 3)
   // );
-  // slice(2 * Math.round(divided[5].length / 3), Math.round(divided[5].length));
+  // .slice(2 * Math.round(divided[5].length / 3), Math.round(divided[5].length));
 
   const categoryRes = divided[1]
-    .slice(0, Math.round(divided[1].length / 2))
+    .slice(0, Math.round(divided[1].length) / 3)
     .map((item) =>
       limit(async () => {
         const cat = await ProductCategories.findOne({
