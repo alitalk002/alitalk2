@@ -228,7 +228,7 @@ function mergePdKeepExisting(basePd, addPd) {
   return added;
 }
 
-// 한 문서 처리: (sId && c && sp) 정규화 값이 같은 것들만 병합
+// 한 문서 처리: (sId && sp) 정규화 값이 같은 것들만 병합
 async function processOneDoc1(doc) {
   const sil = doc?.sku_info?.sil || [];
   if (!sil.length) return { changed: false, before: 0, after: 0, metrics: {} };
@@ -563,7 +563,7 @@ async function main1() {
     `🚀 Bulk merge by (sId,c,sp) 시작 (dry-run: ${dryRun ? "YES" : "NO"})`
   );
 
-  const query = {};
+  const query = { _id: "1005008833041258" };
   const projection = { "sku_info.sil": 1 };
   const cursor = ProductDetail.find(query, projection).cursor();
 

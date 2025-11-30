@@ -143,7 +143,7 @@ async function getServerSideProps(ctx) {
     { categoryName: "태블릿", categoryId: "200001086" },
     { categoryName: "문구", categoryId: "21" },
     { categoryName: "생활용품", categoryId: "13" },
-    { categoryName: "뷰티 & 헬스", categoryId: "66" },
+    { categoryName: "뷰티/헬스", categoryId: "66" },
     { categoryName: "주방용품", categoryId: "200000920" },
     { categoryName: "남성의류", categoryId: "200000343" },
     { categoryName: "여성의류", categoryId: "200000345" },
@@ -384,29 +384,29 @@ async function getServerSideProps(ctx) {
       })
       .filter(Boolean);
 
-    const psTop100 = psList
+    const psTop20 = psList
       .sort((a, b) => {
         // console.log("b:", b);
         return b.ps - a.ps;
       })
 
-      .slice(0, 100)
+      .slice(0, 20)
       .map((item) => {
         allProductPsList.push(item);
         return item._id;
       });
-    const volTop100 = volList
+    const volTop20 = volList
       .sort((a, b) => b.vol - a.vol)
-      .slice(0, 100)
+      .slice(0, 20)
 
       .map((item) => {
         allProductVolList.push(item);
 
         return item._id;
       });
-    const rnTop100 = rnList
+    const rnTop20 = rnList
       .sort((a, b) => b.rn - a.rn)
-      .slice(0, 100)
+      .slice(0, 20)
       .map((item) => {
         allProductRnList.push(item);
         // console.log("item:", item);
@@ -417,7 +417,7 @@ async function getServerSideProps(ctx) {
 
     allProductOffList.push(...allSkus);
 
-    const offTop100 = [];
+    const offTop20 = [];
     const seen = new Set();
 
     for (const item of allSkus.sort(
@@ -433,29 +433,29 @@ async function getServerSideProps(ctx) {
       if (seen.has(key)) continue;
       seen.add(key);
 
-      offTop100.push({
+      offTop20.push({
         product, // ← 중복키와 동일한 값으로 저장
         sId: item.sId ?? null,
         c: item.c ?? null,
         sp: item.sp,
       });
 
-      if (offTop100.length === 100) break; // 100개에서 종료
+      if (offTop20.length === 20) break; // 100개에서 종료
     }
 
-    allProductOffList.push(...offTop100);
-    allProductRnList.push(...rnTop100);
-    allProductPsList.push(...psTop100);
-    allProductVolList.push(...volTop100);
+    allProductOffList.push(...offTop20);
+    allProductRnList.push(...rnTop20);
+    allProductPsList.push(...psTop20);
+    allProductVolList.push(...volTop20);
 
     const res = await CategoryLandingProduct.updateOne(
       { categoryName: category.categoryName },
       {
         $set: {
-          rnList: rnTop100,
-          volList: volTop100,
-          psList: psTop100,
-          offList: offTop100,
+          rnList: rnTop20,
+          volList: volTop20,
+          psList: psTop20,
+          offList: offTop20,
         },
         $setOnInsert: { categoryName: category.categoryName }, // 문서 없으면 생성 시 이름도 세팅
       },
@@ -467,20 +467,20 @@ async function getServerSideProps(ctx) {
     // 상품 정렬: 대표 최저가 오름차순 → 리뷰수 rn 내림차순
   }
 
-  const allProductPsTop100 = allProductPsList
+  const allProductPsTop20 = allProductPsList
     .sort((a, b) => b.ps - a.ps)
-    .slice(0, 100)
+    .slice(0, 20)
     .map((item) => item._id);
-  const allProductVolTop100 = allProductVolList
+  const allProductVolTop20 = allProductVolList
     .sort((a, b) => b.vol - a.vol)
-    .slice(0, 100)
+    .slice(0, 20)
     .map((item) => item._id);
-  const allProductRnTop100 = allProductRnList
+  const allProductRnTop20 = allProductRnList
     .sort((a, b) => b.rn - a.rn)
-    .slice(0, 100)
+    .slice(0, 20)
     .map((item) => item._id);
 
-  const allProductOffTop100 = [];
+  const allProductOffTop20 = [];
   const seen = new Set();
 
   for (const item of allProductOffList.sort(
@@ -497,24 +497,24 @@ async function getServerSideProps(ctx) {
     seen.add(key);
 
     // 4) 결과 푸시(옵션 B 스키마에 바로 맞는 형태)
-    allProductOffTop100.push({
+    allProductOffTop20.push({
       product, // ← offList[].product에 그대로 사용
       c: item.c ?? null,
       sp: item.sp,
       sId: item.sId ?? null,
     });
 
-    if (allProductOffTop100.length === 100) break;
+    if (allProductOffTop20.length === 20) break;
   }
 
   const res = await CategoryLandingProduct.updateOne(
     { categoryName: "전체" },
     {
       $set: {
-        rnList: allProductRnTop100,
-        volList: allProductVolTop100,
-        psList: allProductPsTop100,
-        offList: allProductOffTop100,
+        rnList: allProductRnTop20,
+        volList: allProductVolTop20,
+        psList: allProductPsTop20,
+        offList: allProductOffTop20,
       },
       $setOnInsert: { categoryName: "전체" }, // 문서 없으면 생성 시 이름도 세팅
     },

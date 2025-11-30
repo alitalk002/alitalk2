@@ -100,12 +100,10 @@ export async function getSkuDetail(productId) {
     //   },
     // };
 
-    // console.log("result:", result.ae_item_sku_info.traffic_sku_info_list);
-
     return result;
   } catch (e) {
     console.log("e:", e);
   }
 }
 
-getSkuDetail(1005007509783630);
+// getSkuDetail(1005009943157236);

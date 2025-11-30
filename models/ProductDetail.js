@@ -49,12 +49,11 @@ const PricePointSchema = new mongoose.Schema(
       alias: "sale_price_with_tax",
       set: toNumber,
     },
-    t: {
-      type: Date,
-      default: () => kstISO(),
-      required: true,
-      alias: "collected_at",
-    },
+    // t: {
+    //   type: Date,
+    //   default: () => kstISO(),
+    //   alias: "collected_at",
+    // },
   },
   { _id: false }
 );
