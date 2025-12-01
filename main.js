@@ -478,9 +478,14 @@ async function fetchByCategory({ categoryId }) {
 
   const listTasks = { item: [], dataBaseRes: [] };
 
-  // ---- divided[1]은 2개로 나눠서 배포
-  //  .slice(0, Math.round(divided[1].length / 2))
-  // .slice(Math.round(divided[1].length / 2), Math.round(divided[1].length))
+  // ---- divided[1]은 3개로 나눠서 배포
+  //  .slice(0, Math.round(divided[1].length / 3))
+  //  .slice(Math.round(( divided[1].length) / 3),Math.round(2*divided[1].length)/3)
+  //  .slice(Math.round((2 * divided[1].length) / 3),Math.round(divided[1].length))
+
+  // divided[2]은 2개로 나눠서 배포
+  //  .slice(0, Math.round(divided[2].length / 2))
+  //  .slice(Math.round(divided[2].length / 2), Math.round(divided[2].length )
 
   // ---- divided[5]은 3개로 나눠서 배포
   // .slice(0, Math.round(divided[5].length / 3));
@@ -491,7 +496,7 @@ async function fetchByCategory({ categoryId }) {
   // .slice(2 * Math.round(divided[5].length / 3), Math.round(divided[5].length));
 
   const categoryRes = divided[1]
-    .slice(0, Math.round(divided[1].length / 2))
+    .slice(0, Math.round(divided[1].length / 3))
     .map((item) =>
       limit(async () => {
         const cat = await ProductCategories.findOne({
@@ -1000,7 +1005,7 @@ async function fetchByCategory({ categoryId }) {
                 },
                 arrayFilters: [
                   {
-                    "e.sId": sId,
+                    // "e.sId": sId,
                     $and: [
                       {
                         $or: [
