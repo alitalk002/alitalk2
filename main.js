@@ -350,6 +350,8 @@ function parseProducts(raw) {
 }
 
 function normalize(p) {
+  // if (p.lastest_volume > 0) console.log("p:", p);
+
   return {
     _id: p.product_id,
     // title: p.product_title,
@@ -369,6 +371,7 @@ async function fetchByCategory({ categoryId }) {
   const pageSize = 50;
   const allItems = [];
   let pageNo = 1;
+  let breakNo = 0;
   let lastRaw = null;
   let totalServerCount = 0;
   let totalFilteredCount = 0;
@@ -388,10 +391,16 @@ async function fetchByCategory({ categoryId }) {
       target_currency: "KRW",
       ship_to_country: "KR",
       // country: "KR", // 필요 시만 사용
+
+      //  SALE_PRICE_ASC → 가격 낮은 순
+      // SALE_PRICE_DESC → 가격 높은 순
+      // LAST_VOLUME_ASC → 최근 판매량 낮은 순
+      // LAST_VOLUME_DESC → 최근 판매량 높은 순
       sort: "LAST_VOLUME_DESC",
+
       fields: FIELDS,
       // 카테고리: 서버가 먹는 키를 모두 전달
-      // category_ids: String(categoryId),
+      category_ids: String(categoryId),
       // category_id: String(categoryId),
       // keywords: "", // 섞임 방지로 비움
     };
@@ -437,10 +446,14 @@ async function fetchByCategory({ categoryId }) {
     // - 서버가 더 이상 주지 않음 (0개)
     // - 페이지 크기 미만(마지막 페이지로 추정)
     if (products.length === 0 && products.length < pageSize) {
-      break;
+      if (breakNo === 2) {
+        break;
+      }
+      breakNo++;
+    } else {
+      breakNo = 0;
+      pageNo++;
     }
-
-    pageNo++;
   }
 
   return {
@@ -485,7 +498,7 @@ async function fetchByCategory({ categoryId }) {
 
   // divided[2]은 2개로 나눠서 배포
   //  .slice(0, Math.round(divided[2].length / 2))
-  //  .slice(Math.round(divided[2].length / 2), Math.round(divided[2].length )
+  //  .slice(Math.round(divided[2].length / 2), Math.round(divided[2].length ))
 
   // ---- divided[5]은 3개로 나눠서 배포
   // .slice(0, Math.round(divided[5].length / 3));
@@ -542,6 +555,7 @@ async function fetchByCategory({ categoryId }) {
 
   await Promise.allSettled(categoryRes);
 
+  // 단일 데이터베이스 요청
   // const categoryRes = async () => {
   //   let res = await ProductDetail.find({ _id: "1005007528780320" })
   //     .populate("cId1", "cId cn")
@@ -554,6 +568,20 @@ async function fetchByCategory({ categoryId }) {
 
   // await categoryRes();
 
+  //  단일 카테고리 요청
+  // const categoryRes = async () => {
+  //   const item = {
+  //     cId: "201371802",
+  //   };
+
+  //   const { items, raw, serverCount, filteredCount, note } =
+  //     await fetchByCategory({
+  //       categoryId: item.cId,
+  //     });
+
+  //   listTasks.item.push(...items);
+  // };
+
   // 데이터베이스에 있는건 volume 200 안넘어도 업데이트
 
   // await processDivided(divided, listTasks);
@@ -561,7 +589,9 @@ async function fetchByCategory({ categoryId }) {
   console.log("dataBaseRes", listTasks.dataBaseRes.length);
   console.log("item", listTasks.item.length);
 
-  const items = (listTasks.item ?? []).filter((p) => Number(p?.volume) >= 100);
+  const items = (listTasks.item ?? []).filter((p) => {
+    return Number(p?.volume) >= 150;
+  });
   const dbs = listTasks.dataBaseRes ?? [];
 
   const merged = [
