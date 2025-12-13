@@ -491,25 +491,20 @@ async function fetchByCategory({ categoryId }) {
 
   const listTasks = { item: [], dataBaseRes: [] };
 
-  // ---- divided[1]은 3개로 나눠서 배포
-  //  .slice(0, Math.round(divided[1].length / 3))
-  //  .slice(Math.round(( divided[1].length) / 3),Math.round(2*divided[1].length)/3)
-  //  .slice(Math.round((2 * divided[1].length) / 3),Math.round(divided[1].length))
-
   // divided[2]은 2개로 나눠서 배포
   //  .slice(0, Math.round(divided[2].length / 2))
   //  .slice(Math.round(divided[2].length / 2), Math.round(divided[2].length ))
 
   // ---- divided[5]은 3개로 나눠서 배포
-  // .slice(0, Math.round(divided[5].length / 3));
+  // .slice(0, Math.round(divided[5].length / 3))
   // .slice(
   //   Math.round(divided[5].length / 3),
   //   2 * Math.round(divided[5].length / 3)
-  // );
-  // .slice(2 * Math.round(divided[5].length / 3), Math.round(divided[5].length));
+  // )
+  // .slice(2 * Math.round(divided[5].length / 3), Math.round(divided[5].length))
 
   const categoryRes = divided[1]
-    .slice(0, Math.round(divided[1].length / 3))
+    // .slice(0, Math.round(divided[1].length / 3))
     .map((item) =>
       limit(async () => {
         const cat = await ProductCategories.findOne({
@@ -557,7 +552,7 @@ async function fetchByCategory({ categoryId }) {
 
   // 단일 데이터베이스 요청
   // const categoryRes = async () => {
-  //   let res = await ProductDetail.find({ _id: "1005007528780320" })
+  //   let res = await ProductDetail.find({ _id: "1005007986436305" })
   //     .populate("cId1", "cId cn")
   //     .populate("cId2", "cId cn")
   //     .lean({ virtuals: true });
@@ -773,6 +768,17 @@ async function fetchByCategory({ categoryId }) {
           if (cId2) {
             baseDoc.cId2 = cId2;
           }
+
+          if (info.display_category_name_l1) {
+            baseDoc.c1n = info.display_category_name_l1;
+          }
+          if (info.display_category_name_l2) {
+            baseDoc.c2n = info.display_category_name_l2;
+          }
+          if (info.display_category_name_l3) {
+            baseDoc.c3n = info.display_category_name_l3;
+          }
+
           if (info.title && stripForCompare(info.title) !== "") {
             baseDoc.tt = info.title;
           }
@@ -875,7 +881,6 @@ async function fetchByCategory({ categoryId }) {
             //   continue;
             // }
             const key1 = toKey1(item1?.color, item1?.sku_properties);
-
             const exist1 = skuMap1.get(key1);
             // console.log("exist1:", exist1);
 
