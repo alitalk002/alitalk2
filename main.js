@@ -242,7 +242,7 @@ const FIELDS = [
 async function fetchJsonWithRetry(
   url,
   {
-    retries = 4, // 총 5회(0..4)
+    retries = 1, // 총 5회(0..4)
     base = 600, // 시작 지연(ms)
     factor = 2,
     jitter = 0.35,
@@ -661,7 +661,7 @@ async function fetchByCategory({ categoryId }) {
           } else {
             const pdRes = await tryCatch(() =>
               withRetry(() => getProductDetailsById(productIds), {
-                retries: 2,
+                retries: 1,
                 base: 800,
                 max: 10000,
               })
