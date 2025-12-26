@@ -6,11 +6,14 @@ import ProductDetail from "./models/ProductDetail.js";
 import dbConnect from "./utils/dbConnect.js";
 
 /**
- * 현재 시각(new Date()) 기준 **N일 전(기본 20일)** 이후의 pd[*].t(=collected_at)가
- * '단 하나도 없는' 상품을 삭제합니다.
+ * 현재 시각(new Date()) 기준 **N일 전(기본 16일)** 이후의 pd[*]에
+ * '단 하나의 최근 날짜 포인트도 없는' 상품을 삭제합니다.
+ *
+ * 🔹 기준이 되는 날짜는 Map의 key(문자열 날짜)이며,
+ *    구형 데이터(t/collected_at 필드)가 있으면 그것도 함께 고려합니다.
  *
  * @param {Object|string} params.query     MongoDB find 조건. 문자열이면 {_id: "<문자열>"}로 자동 변환
- * @param {number} [params.days=20]        일 수 기준(기본 20일)
+ * @param {number} [params.days=16]        일 수 기준(기본 16일)
  * @param {boolean} [params.verbose=false] 문서별 상세 로그
  * @param {boolean} [params.disconnectAfter=false] 처리 후 mongoose 연결 종료
  * @param {number} [params.batchSize=500]  bulkWrite 배치 크기
@@ -19,7 +22,7 @@ import dbConnect from "./utils/dbConnect.js";
  */
 export async function main({
   query = {},
-  days = 16, // ✅ 기본 16일
+  days = 13, // ✅ 기본 13일
   verbose = false,
   disconnectAfter = false,
   batchSize = 500,
@@ -39,7 +42,7 @@ export async function main({
   query = coerceQuery(query);
 
   const now = new Date(); // ✅ 현재 시간
-  const threshold = new Date(now.getTime() - days * 24 * 60 * 60 * 1000); // ✅ 20일(기본)
+  const threshold = new Date(now.getTime() - days * 24 * 60 * 60 * 1000); // ✅ days일 기준
 
   const isSingle = hasIdQuery(query);
   console.log(`🧭 now=${now.toISOString()}`);
@@ -185,41 +188,82 @@ function hasIdQuery(q) {
   return !!(q && Object.prototype.hasOwnProperty.call(q, "_id"));
 }
 
-// pd(Map|Object)에 threshold 이상 t 존재 여부
+// ───────────────────────────────────────────
+// pd(Map|Object)에 threshold 이상 날짜 존재 여부
+// ✅ 이제 t 필드 없이 날짜 key 기준 + 구 데이터(t/collected_at)까지 함께 체크
 function hasRecentPricePoint(doc, threshold) {
   const sil = doc?.sku_info?.sil || [];
+
   for (const sku of sil) {
     const pd = sku?.pd;
     if (!pd) continue;
-    const values =
-      pd instanceof Map ? Array.from(pd.values()) : Object.values(pd);
-    for (const p of values) {
-      if (!p) continue;
-      const t = p.t || p.collected_at;
-      if (!t) continue;
-      const dt = new Date(t);
-      if (!Number.isNaN(dt.valueOf()) && dt >= threshold) return true;
+
+    // Map이든 Object든 [key, value] 형태로 다루기
+    const entries =
+      pd instanceof Map ? Array.from(pd.entries()) : Object.entries(pd);
+
+    for (const [dateKey, p] of entries) {
+      let dt = null;
+
+      // 1순위: key를 날짜로 해석
+      if (dateKey) {
+        const d1 = new Date(dateKey);
+        if (!Number.isNaN(d1.valueOf())) dt = d1;
+      }
+
+      // 2순위: 값 안의 t / collected_at (구조 변경 이전 데이터 호환용)
+      if (!dt && p) {
+        const t = p.t || p.collected_at;
+        if (t) {
+          const d2 = new Date(t);
+          if (!Number.isNaN(d2.valueOf())) dt = d2;
+        }
+      }
+
+      if (!dt) continue;
+      if (dt >= threshold) return true; // 기준일 이후 포인트 하나라도 있으면 유지
     }
   }
+
+  // 기준일 이후 포인트가 하나도 없으면 삭제 대상
   return false;
 }
 
-// 최신 t ISO
+// 최신 날짜 ISO
 function getNewestPointISO(doc) {
   let newest = null;
   const sil = doc?.sku_info?.sil || [];
+
   for (const sku of sil) {
     const pd = sku?.pd;
     if (!pd) continue;
-    const values =
-      pd instanceof Map ? Array.from(pd.values()) : Object.values(pd);
-    for (const p of values) {
-      const t = p?.t || p?.collected_at;
-      if (!t) continue;
-      const dt = new Date(t);
-      if (!Number.isNaN(dt.valueOf()) && (!newest || dt > newest)) newest = dt;
+
+    const entries =
+      pd instanceof Map ? Array.from(pd.entries()) : Object.entries(pd);
+
+    for (const [dateKey, p] of entries) {
+      let dt = null;
+
+      // 1순위: key
+      if (dateKey) {
+        const d1 = new Date(dateKey);
+        if (!Number.isNaN(d1.valueOf())) dt = d1;
+      }
+
+      // 2순위: 값 안의 t / collected_at
+      if (!dt && p) {
+        const t = p.t || p.collected_at;
+        if (t) {
+          const d2 = new Date(t);
+          if (!Number.isNaN(d2.valueOf())) dt = d2;
+        }
+      }
+
+      if (!dt) continue;
+      if (!newest || dt > newest) newest = dt;
     }
   }
+
   return newest ? newest.toISOString() : null;
 }
 
@@ -242,7 +286,7 @@ function countPricePoints(doc) {
 // 단일 테스트: query: "1005007288239328"
 main({
   // query: "1005007288239328",
-  // days: 20, // 기본 20일, 변경 가능
+  // days: 20, // 필요하면 조정
   verbose: true,
   disconnectAfter: true,
 }).catch((e) => {

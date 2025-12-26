@@ -5,7 +5,7 @@ import dbConnect from "./utils/dbConnect.js";
 
 async function removeSalePrice1000OnDates() {
   // 대상 날짜들 (접두사 매칭: 'YYYY-MM-DD')
-  const filter = { vol: { $lt: 160 } };
+  const filter = { vol: { $lt: 140 } };
   const res = await ProductDetail.deleteMany(filter);
   console.log("res:", res);
 }

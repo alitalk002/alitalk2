@@ -7,6 +7,117 @@ import CategoryLandingProduct from "./models/CategoryLandingProduct.js";
 // ── 기준: 현재로부터 4일
 const FOUR_DAYS_MS = 4 * 24 * 60 * 60 * 1000;
 
+function analyzePd(pdObj, start, end) {
+  if (!pdObj || typeof pdObj !== "object") {
+    return {
+      hasData: false,
+      lowestSale: null,
+      avgSale: null,
+      latestSale: null,
+      latestPoint: null,
+      avgToCurrentDiscountPct: null,
+      avgToCurrentDiscountPctRounded: null,
+      isFlat: false,
+    };
+  }
+
+  const parseDateKey = (k) => {
+    if (typeof k !== "string") return null;
+
+    if (/^\d{8}$/.test(k)) {
+      const y = k.slice(0, 4);
+      const m = k.slice(4, 6);
+      const d = k.slice(6, 8);
+      const dt = new Date(`${y}-${m}-${d}T00:00:00.000Z`);
+      return Number.isNaN(dt.valueOf()) ? null : dt;
+    }
+
+    const dt = new Date(k);
+    return Number.isNaN(dt.valueOf()) ? null : dt;
+  };
+
+  const getPointDate = (key, v) => {
+    const byKey = parseDateKey(key);
+    if (byKey) return byKey;
+
+    if (v && (v.t || v.collected_at)) {
+      const dt = new Date(v.t || v.collected_at);
+      if (!Number.isNaN(dt.valueOf())) return dt;
+    }
+    return null;
+  };
+
+  let lowestSale = null;
+  let latestPoint = null;
+  const uniqueSales = new Set();
+  let hasData = false;
+
+  let sumSale = 0;
+  let cntSale = 0;
+
+  const entries =
+    pdObj instanceof Map ? Array.from(pdObj.entries()) : Object.entries(pdObj);
+
+  for (const [key, v] of entries) {
+    if (!v) continue;
+
+    const t = getPointDate(key, v);
+    if (!t) continue;
+
+    if (t < start || t >= end) continue;
+
+    const sRaw = v.s ?? v.p;
+    if (sRaw == null) continue;
+
+    const s = Number(sRaw);
+    if (!Number.isFinite(s)) continue;
+
+    hasData = true;
+
+    // 평균 계산용 누적
+    sumSale += s;
+    cntSale += 1;
+
+    if (lowestSale == null || s < lowestSale) {
+      lowestSale = s;
+    }
+
+    if (!latestPoint || t > latestPoint.t) {
+      latestPoint = { ...v, t, s };
+    }
+
+    uniqueSales.add(s);
+  }
+
+  const latestSale = latestPoint?.s ?? null;
+  const avgSale = hasData && cntSale > 0 ? sumSale / cntSale : null;
+
+  // 평균가 대비 현재가 할인율(%)
+  const avgToCurrentDiscountPct =
+    avgSale != null && avgSale > 0 && latestSale != null
+      ? ((avgSale - latestSale) / avgSale) * 100
+      : null;
+
+  // 표시용(소수 1자리) - 필요 없으면 빼도 됨
+  const avgToCurrentDiscountPctRounded =
+    avgToCurrentDiscountPct == null
+      ? null
+      : Math.round(avgToCurrentDiscountPct * 10) / 10;
+
+  const isFlat = hasData && uniqueSales.size <= 1;
+
+  return {
+    hasData,
+    lowestSale,
+    avgSale,
+    latestSale,
+    latestPoint,
+    avgToCurrentDiscountPct,
+    avgToCurrentDiscountPctRounded,
+    isFlat,
+  };
+}
+
 function getLatestPdTime(pd) {
   if (!pd) return null;
 
@@ -74,58 +185,6 @@ function getRange(rangeParam) {
   return { start, end, label: "rolling30" };
 }
 
-function analyzePd(pdObj, start, end) {
-  if (!pdObj || typeof pdObj !== "object") {
-    return {
-      lowestSale: null,
-      lowestPoints: [],
-      latestSale: null,
-      latestPoint: null,
-      isFlat: false,
-    };
-  }
-
-  const all = Object.values(pdObj)
-    .map((v) => {
-      const t = v?.t ? new Date(v.t) : null;
-      const s = v?.s ?? null;
-      const p = v?.p ?? null;
-      return t ? { p, s: s == null ? null : Number(s), t } : null;
-    })
-    .filter(Boolean);
-
-  const inRange = all.filter(({ t, s }) => t >= start && t < end && s != null);
-  if (inRange.length === 0) {
-    return {
-      lowestSale: null,
-      lowestPoints: [],
-      latestSale: null,
-      latestPoint: null,
-      isFlat: false,
-    };
-  }
-
-  // flat 판단: s 유니크 개수
-  const uniqS = new Set(inRange.map(({ s }) => s));
-  const isFlat = uniqS.size <= 1; // 기간 내 내내 같은 가격이면 true
-
-  // 최저 s
-  let lowestSale = null;
-  for (const { s } of inRange) {
-    lowestSale = lowestSale == null ? s : Math.min(lowestSale, s);
-  }
-  const lowestPoints = inRange.filter(({ s }) => s === lowestSale);
-
-  // 최신 포인트(가장 큰 t)
-  let latestPoint = null;
-  for (const pt of inRange) {
-    if (!latestPoint || pt.t > latestPoint.t) latestPoint = pt;
-  }
-  const latestSale = latestPoint?.s ?? null;
-
-  return { lowestSale, lowestPoints, latestSale, latestPoint, isFlat };
-}
-
 async function getServerSideProps(ctx) {
   // 기간 계산
 
@@ -140,7 +199,10 @@ async function getServerSideProps(ctx) {
   const categoryList = [
     { categoryName: "음식", categoryId: "2" },
     { categoryName: "가전제품", categoryId: "6" },
+    { categoryName: "소비자 가전", categoryId: "44" },
     { categoryName: "태블릿", categoryId: "200001086" },
+    { categoryName: "이동 전화", categoryId: "5090301" },
+    { categoryName: "노트북", categoryId: "702" },
     { categoryName: "문구", categoryId: "21" },
     { categoryName: "생활용품", categoryId: "13" },
     { categoryName: "뷰티/헬스", categoryId: "66" },
@@ -196,6 +258,7 @@ async function getServerSideProps(ctx) {
 
             // 기간 내 포인트 없거나 flat 제거
             if (lowestSale == null || latestSale == null) return null;
+
             if (isFlat) return null;
 
             // 최신가가 기간 최저가와 같지 않으면 제거
@@ -218,6 +281,7 @@ async function getServerSideProps(ctx) {
             const ratio = latest / avgSale; // 낮을수록 "평균 대비 현재가"가 저렴
 
             // console.log("doc:", doc);
+            console.log("성공");
 
             // 상위 랭킹용 풀 컬렉션에 적재
             allSkus.push({

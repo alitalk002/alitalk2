@@ -66,7 +66,7 @@ const PricePointSchema = new mongoose.Schema(
  */
 const SkuInfoItemSchema = new mongoose.Schema(
   {
-    sId: { type: String, required: true, alias: "sku_id" },
+    // sId: { type: String, required: true, alias: "sku_id" },
     c: { type: String, default: "", alias: "color", set: normalizeCForCompare },
     sp: {
       type: String,
@@ -74,7 +74,7 @@ const SkuInfoItemSchema = new mongoose.Schema(
       alias: "sku_properties",
     },
     spKey: { type: String, set: normalizeSpForCompare },
-    cur: { type: String, default: "KRW", alias: "currency" },
+    // cur: { type: String, default: "KRW", alias: "currency" },
     pd: {
       type: Map,
       of: PricePointSchema,
@@ -193,7 +193,6 @@ const ProductDetailSchema = new mongoose.Schema(
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 조회 가속 인덱스
-ProductDetailSchema.index({ "sku_info.sil.sId": 1 });
 ProductDetailSchema.index({ cId1: 1 }); // ObjectId ref
 ProductDetailSchema.index({ cId2: 1 });
 
