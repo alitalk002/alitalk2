@@ -23,19 +23,61 @@ import {
   stripForCompare,
 } from "./utils/normalize.js";
 import { withRetry } from "./utils/withRetry.js";
+import { fetchByCategory } from "./utils/fetchByCategory.js";
 
-const API = "https://api-sg.aliexpress.com/sync";
-const METHOD = "aliexpress.affiliate.product.query";
-
-const APP_KEY = process.env.AE_APP_KEY;
-const APP_SECRET = process.env.AE_APP_SECRET;
-const TRACKING_ID = process.env.AE_TRACKING_ID;
-
-const USE_SYNONYM_MAP = true;
 const SYNONYM_KEY_MAP = { 색깔: "색상" };
 
 const limit = pLimit(10); // 동시에 10개만 실행
 
+const categoryList = [
+  { categoryName: "이슬람 패션", vol: 1000 },
+  { categoryName: "주얼리 및 엑세서리", vol: 2000 },
+  { categoryName: "머리 연장 & 가발", vol: 2000 },
+  { categoryName: "회계 용품", vol: 3000 },
+  { categoryName: "클래식 장난감", vol: 1000 },
+  { categoryName: "당신의 순서에 추가 급여", vol: 1000000000 },
+  { categoryName: "조명", vol: 300 },
+  { categoryName: "전원 도구 부품 및 액세서리", vol: 1000 },
+  { categoryName: "네일아트 & 도구", vol: 3000 },
+  { categoryName: "남성 시계", vol: 3000 },
+  { categoryName: "웨딩 및 이벤트", vol: 1000 },
+  { categoryName: "활성 구성 요소", vol: 1000 },
+  { categoryName: "워키 토키 액세서리 및 부품", vol: 2000 },
+  { categoryName: "도구 세트", vol: 1000 },
+  { categoryName: "아기 기념품", vol: 10000 },
+  { categoryName: "내장 부품", vol: 1000 },
+  { categoryName: "전자 장난감", vol: 1500 },
+  { categoryName: "참신하고 웃긴 장난감", vol: 1500 },
+  { categoryName: "패션 주얼리", vol: 10000 },
+  { categoryName: "회화 용품", vol: 1000 },
+  { categoryName: "무대 & 댄스 의상", vol: 5000 },
+  { categoryName: "헤어 액세서리", vol: 1000 },
+  { categoryName: "욕실용품", vol: 500 },
+  { categoryName: "자동차 전자 제품", vol: 1000 },
+  { categoryName: "외장 부품", vol: 1000 },
+  { categoryName: "신에너지 차량 부품 및 액세서리", vol: 2000 },
+  { categoryName: "뷰티 & 헬스", vol: 500 },
+  { categoryName: "작업장 안전 용품", vol: 1000 },
+  { categoryName: "어머니 & 아이", vol: 2000 },
+  { categoryName: "가전제품 부품", vol: 300 },
+  { categoryName: "수공예품 및 바느질", vol: 1000 },
+  { categoryName: "박제 동물 & 견면 벨벳", vol: 1000 },
+  { categoryName: "코스프레 액세서리", vol: 1000 },
+  { categoryName: "가족 지능 시스템", vol: 1000 },
+  { categoryName: "펜, 연필 & 쓰기 공급", vol: 1000 },
+  { categoryName: "수공구", vol: 1000 },
+  { categoryName: "플레이 차량 및 모델", vol: 1000 },
+  { categoryName: "배관", vol: 1000 },
+  { categoryName: "문, 창문", vol: 1000 },
+  { categoryName: "오토바이 장비 및 부품", vol: 5000 },
+  { categoryName: "가방 부속품", vol: 2000 },
+  { categoryName: "DIY 액세서리", vol: 1000 },
+  { categoryName: "기타 차량 부품 및 액세서리", vol: 3000 },
+  { categoryName: "출입 통제", vol: 3000 },
+  { categoryName: "정원 도구", vol: 2000 },
+  { categoryName: "보안 경보", vol: 1000 },
+  { categoryName: "메이크업", vol: 500 },
+];
 // ─────────────────────────────────────────────────────────────────────────────
 //  실패 무해 try/catch, 배열 정규화
 
@@ -217,21 +259,21 @@ const norm = (v) =>
     .toString() // 문자열화
     .replace(/[\s\u200B-\u200D\uFEFF]/g, ""); // 일반 공백 + 제로폭 공백 제거
 
-const FIELDS = [
-  "product_id",
-  "product_title",
-  "product_detail_url",
-  "product_main_image_url",
-  "target_app_sale_price",
-  "target_app_sale_price_currency",
-  "promotion_link",
-  "lastest_volume",
-  "review_count",
-  "first_level_category_id",
-  "first_level_category_name",
-  "second_level_category_id",
-  "second_level_category_name",
-].join(",");
+// const FIELDS = [
+//   "product_id",
+//   "product_title",
+//   "product_detail_url",
+//   "product_main_image_url",
+//   "target_app_sale_price",
+//   "target_app_sale_price_currency",
+//   "promotion_link",
+//   "lastest_volume",
+//   "review_count",
+//   "first_level_category_id",
+//   "first_level_category_name",
+//   "second_level_category_id",
+//   "second_level_category_name",
+// ].join(",");
 
 // ───────────────────────── 재시도 유틸 ─────────────────────────
 
@@ -239,64 +281,64 @@ const FIELDS = [
  * fetch → JSON 파싱까지 포함한 재시도 래퍼
  * - 429/5xx/타임아웃/네트워크 오류(ECONNRESET 등) 시 지수백오프(+지터)로 재시도
  */
-async function fetchJsonWithRetry(
-  url,
-  {
-    retries = 1, // 총 2회(0..4)
-    base = 600, // 시작 지연(ms)
-    factor = 2,
-    jitter = 0.35,
-    max = 10000,
-    timeoutMs = 18000,
-    fetchInit = {},
-  } = {}
-) {
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    const ctrl = new AbortController();
-    const to = setTimeout(() => ctrl.abort(), timeoutMs);
-    try {
-      const res = await fetch(url, { signal: ctrl.signal, ...fetchInit });
-      clearTimeout(to);
+// async function fetchJsonWithRetry(
+//   url,
+//   {
+//     retries = 1, // 총 2회(0..4)
+//     base = 600, // 시작 지연(ms)
+//     factor = 2,
+//     jitter = 0.35,
+//     max = 10000,
+//     timeoutMs = 18000,
+//     fetchInit = {},
+//   } = {}
+// ) {
+//   for (let attempt = 0; attempt <= retries; attempt++) {
+//     const ctrl = new AbortController();
+//     const to = setTimeout(() => ctrl.abort(), timeoutMs);
+//     try {
+//       const res = await fetch(url, { signal: ctrl.signal, ...fetchInit });
+//       clearTimeout(to);
 
-      if (res.ok) {
-        const txt = await res.text();
-        try {
-          return JSON.parse(txt);
-        } catch {
-          return {};
-        }
-      }
+//       if (res.ok) {
+//         const txt = await res.text();
+//         try {
+//           return JSON.parse(txt);
+//         } catch {
+//           return {};
+//         }
+//       }
 
-      // 429/5xx → 재시도
-      if (res.status === 429 || (res.status >= 500 && res.status <= 599)) {
-        if (attempt === retries)
-          throw new Error(`HTTP ${res.status} (max retry)`);
-        const ra = res.headers.get("retry-after");
-        const delay = ra
-          ? Number(ra) * 1000
-          : calcDelay({ base, factor, attempt, jitter, max });
-        await sleep(delay);
-        continue;
-      }
+//       // 429/5xx → 재시도
+//       if (res.status === 429 || (res.status >= 500 && res.status <= 599)) {
+//         if (attempt === retries)
+//           throw new Error(`HTTP ${res.status} (max retry)`);
+//         const ra = res.headers.get("retry-after");
+//         const delay = ra
+//           ? Number(ra) * 1000
+//           : calcDelay({ base, factor, attempt, jitter, max });
+//         await sleep(delay);
+//         continue;
+//       }
 
-      // 그 외 4xx → 즉시 실패
-      const body = await res.text().catch(() => "");
-      throw new Error(`HTTP ${res.status}: ${body.slice(0, 300)}`);
-    } catch (err) {
-      clearTimeout(to);
-      const code = err?.cause?.code || err?.code;
-      const isAbort = err?.name === "AbortError";
-      const transient =
-        isAbort ||
-        code === "ECONNRESET" ||
-        code === "ETIMEDOUT" ||
-        code === "EAI_AGAIN";
-      if (!transient || attempt === retries) throw err;
-      const delay = calcDelay({ base, factor, attempt, jitter, max });
-      await sleep(delay);
-    }
-  }
-}
+//       // 그 외 4xx → 즉시 실패
+//       const body = await res.text().catch(() => "");
+//       throw new Error(`HTTP ${res.status}: ${body.slice(0, 300)}`);
+//     } catch (err) {
+//       clearTimeout(to);
+//       const code = err?.cause?.code || err?.code;
+//       const isAbort = err?.name === "AbortError";
+//       const transient =
+//         isAbort ||
+//         code === "ECONNRESET" ||
+//         code === "ETIMEDOUT" ||
+//         code === "EAI_AGAIN";
+//       if (!transient || attempt === retries) throw err;
+//       const delay = calcDelay({ base, factor, attempt, jitter, max });
+//       await sleep(delay);
+//     }
+//   }
+// }
 
 /**
  * 임의 함수 재시도(예: getSkuDetail)
@@ -324,145 +366,147 @@ async function fetchJsonWithRetry(
 //   }
 // }
 
-function signSha256(params, secret) {
-  const base = Object.keys(params)
-    .filter(
-      (k) => params[k] !== undefined && params[k] !== null && k !== "sign"
-    )
-    .sort()
-    .map((k) => k + params[k])
-    .join("");
-  return crypto
-    .createHmac("sha256", secret)
-    .update(base, "utf8")
-    .digest("hex")
-    .toUpperCase();
-}
+// function signSha256(params, secret) {
+//   const base = Object.keys(params)
+//     .filter(
+//       (k) => params[k] !== undefined && params[k] !== null && k !== "sign"
+//     )
+//     .sort()
+//     .map((k) => k + params[k])
+//     .join("");
+//   return crypto
+//     .createHmac("sha256", secret)
+//     .update(base, "utf8")
+//     .digest("hex")
+//     .toUpperCase();
+// }
 
-function parseProducts(raw) {
-  const arr =
-    raw?.aliexpress_affiliate_product_query_response?.resp_result?.result
-      ?.products?.product ??
-    raw?.resp_result?.result?.products?.product ??
-    raw?.result?.products?.product ??
-    [];
-  return Array.isArray(arr) ? arr : [];
-}
+// function parseProducts(raw) {
+//   const arr =
+//     raw?.aliexpress_affiliate_product_query_response?.resp_result?.result
+//       ?.products?.product ??
+//     raw?.resp_result?.result?.products?.product ??
+//     raw?.result?.products?.product ??
+//     [];
+//   return Array.isArray(arr) ? arr : [];
+// }
 
-function normalize(p) {
-  // if (p.lastest_volume > 0) console.log("p:", p);
+// function normalize(p) {
+//   // if (p.lastest_volume > 0) console.log("p:", p);
 
-  return {
-    _id: p.product_id,
-    // title: p.product_title,
-    // price: p.target_app_sale_price,
-    // currency: p.target_app_sale_price_currency,
-    // image: p.product_main_image_url,
-    promotion_link: p.promotion_link,
-    // c1_id: p.first_level_category_id,
-    // c1_name: p.first_level_category_name,
-    // c2_id: p.second_level_category_id,
-    // c2_name: p.second_level_category_name,
-    volume: p.lastest_volume,
-  };
-}
+//   console.log("p", p);
 
-async function fetchByCategory({ categoryId }) {
-  const pageSize = 50;
-  const allItems = [];
-  let pageNo = 1;
-  let breakNo = 0;
-  let lastRaw = null;
-  let totalServerCount = 0;
-  let totalFilteredCount = 0;
+//   return {
+//     _id: p.product_id,
+//     // title: p.product_title,
+//     // price: p.target_app_sale_price,
+//     // currency: p.target_app_sale_price_currency,
+//     // image: p.product_main_image_url,
+//     promotion_link: p.promotion_link,
+//     // c1_id: p.first_level_category_id,
+//     // c1_name: p.first_level_category_name,
+//     // c2_id: p.second_level_category_id,
+//     // c2_name: p.second_level_category_name,
+//     volume: p.lastest_volume,
+//   };
+// }
 
-  while (true) {
-    const params = {
-      app_key: APP_KEY,
-      method: METHOD,
-      sign_method: "sha256",
-      timestamp: Date.now(), // epoch(ms)
-      v: "1.0",
-      // biz
-      tracking_id: TRACKING_ID,
-      page_no: pageNo,
-      page_size: pageSize,
-      target_language: "KO",
-      target_currency: "KRW",
-      ship_to_country: "KR",
-      // country: "KR", // 필요 시만 사용
+// export async function fetchByCategory({ categoryId }) {
+//   const pageSize = 50;
+//   const allItems = [];
+//   let pageNo = 1;
+//   let breakNo = 0;
+//   let lastRaw = null;
+//   let totalServerCount = 0;
+//   let totalFilteredCount = 0;
 
-      //  SALE_PRICE_ASC → 가격 낮은 순
-      // SALE_PRICE_DESC → 가격 높은 순
-      // LAST_VOLUME_ASC → 최근 판매량 낮은 순
-      // LAST_VOLUME_DESC → 최근 판매량 높은 순
-      sort: "LAST_VOLUME_DESC",
+//   while (true) {
+//     const params = {
+//       app_key: APP_KEY,
+//       method: METHOD,
+//       sign_method: "sha256",
+//       timestamp: Date.now(), // epoch(ms)
+//       v: "1.0",
+//       // biz
+//       tracking_id: TRACKING_ID,
+//       page_no: pageNo,
+//       page_size: pageSize,
+//       target_language: "KO",
+//       target_currency: "KRW",
+//       ship_to_country: "KR",
+//       // country: "KR", // 필요 시만 사용
 
-      fields: FIELDS,
-      // 카테고리: 서버가 먹는 키를 모두 전달
-      category_ids: String(categoryId),
-      // category_id: String(categoryId),
-      // keywords: "", // 섞임 방지로 비움
-    };
-    params.sign = signSha256(params, APP_SECRET);
+//       //  SALE_PRICE_ASC → 가격 낮은 순
+//       // SALE_PRICE_DESC → 가격 높은 순
+//       // LAST_VOLUME_ASC → 최근 판매량 낮은 순
+//       // LAST_VOLUME_DESC → 최근 판매량 높은 순
+//       sort: "LAST_VOLUME_DESC",
 
-    const url = API + "?" + new URLSearchParams(params).toString();
-    // const res = await fetch(url);
-    // const raw = await res.json().catch(() => ({}));
-    const raw = await fetchJsonWithRetry(url);
+//       fields: FIELDS,
+//       // 카테고리: 서버가 먹는 키를 모두 전달
+//       category_ids: String(categoryId),
+//       // category_id: String(categoryId),
+//       // keywords: "", // 섞임 방지로 비움
+//     };
+//     params.sign = signSha256(params, APP_SECRET);
 
-    lastRaw = raw;
+//     const url = API + "?" + new URLSearchParams(params).toString();
+//     // const res = await fetch(url);
+//     // const raw = await res.json().catch(() => ({}));
+//     const raw = await fetchJsonWithRetry(url);
 
-    // 에러 그대로 전달하되, 형태는 아래 호출부와 호환되게 유지
-    if (raw?.error_response) {
-      return {
-        items: [],
-        raw,
-        serverCount: 0,
-        filteredCount: 0,
-        note: "error_response",
-      };
-    }
+//     lastRaw = raw;
 
-    // 서버 반환
-    const products = parseProducts(raw);
-    const filtered = products.filter(
-      (p) =>
-        Number(p.first_level_category_id) === Number(categoryId) ||
-        Number(p.second_level_category_id) === Number(categoryId)
-    );
+//     // 에러 그대로 전달하되, 형태는 아래 호출부와 호환되게 유지
+//     if (raw?.error_response) {
+//       return {
+//         items: [],
+//         raw,
+//         serverCount: 0,
+//         filteredCount: 0,
+//         note: "error_response",
+//       };
+//     }
 
-    const final = (filtered.length ? filtered : products).map(normalize);
+//     // 서버 반환
+//     const products = parseProducts(raw);
+//     const filtered = products.filter(
+//       (p) =>
+//         Number(p.first_level_category_id) === Number(categoryId) ||
+//         Number(p.second_level_category_id) === Number(categoryId)
+//     );
 
-    totalServerCount += products.length;
-    totalFilteredCount += filtered.length;
+//     const final = (filtered.length ? filtered : products).map(normalize);
 
-    // 현 페이지 결과 누적
-    if (final.length > 0) {
-      allItems.push(...final);
-    }
+//     totalServerCount += products.length;
+//     totalFilteredCount += filtered.length;
 
-    // 종료 조건:
-    // - 서버가 더 이상 주지 않음 (0개)
-    // - 페이지 크기 미만(마지막 페이지로 추정)
-    if (products.length === 0 && products.length < pageSize) {
-      if (breakNo === 2) {
-        break;
-      }
-      breakNo++;
-    } else {
-      breakNo = 0;
-      pageNo++;
-    }
-  }
+//     // 현 페이지 결과 누적
+//     if (final.length > 0) {
+//       allItems.push(...final);
+//     }
 
-  return {
-    items: allItems,
-    raw: lastRaw, // 마지막 페이지 raw
-    serverCount: totalServerCount,
-    filteredCount: totalFilteredCount,
-  };
-}
+//     // 종료 조건:
+//     // - 서버가 더 이상 주지 않음 (0개)
+//     // - 페이지 크기 미만(마지막 페이지로 추정)
+//     if (products.length === 0 && products.length < pageSize) {
+//       if (breakNo === 2) {
+//         break;
+//       }
+//       breakNo++;
+//     } else {
+//       breakNo = 0;
+//       pageNo++;
+//     }
+//   }
+
+//   return {
+//     items: allItems,
+//     raw: lastRaw, // 마지막 페이지 raw
+//     serverCount: totalServerCount,
+//     filteredCount: totalFilteredCount,
+//   };
+// }
 
 (async () => {
   await dbConnect();
@@ -565,19 +609,21 @@ async function fetchByCategory({ categoryId }) {
 
         listTasks.item.push(...items);
         listTasks.dataBaseRes.push(...res);
-      })
+      }),
     );
 
   await Promise.allSettled(categoryRes);
 
   // 단일 데이터베이스 요청
+
   // const categoryRes = async () => {
-  //   let res = await ProductDetail.find({ _id: "1005008152051252" })
+  //   let res = await ProductDetail.find({ _id: "1005007693341513" })
   //     .populate("cId1", "cId cn")
   //     .populate("cId2", "cId cn")
   //     .lean({ virtuals: true });
 
   //   // listTasks.item.push(...items);
+  //   listTasks.dataBaseRes.push({ _id: "1005007693341513" });
   //   listTasks.dataBaseRes.push(...res);
   // };
 
@@ -586,7 +632,7 @@ async function fetchByCategory({ categoryId }) {
   //  단일 카테고리 요청
   // const categoryRes = async () => {
   //   const item = {
-  //     cId: "201371802",
+  //     cId: "201515701",
   //   };
 
   //   const { items, raw, serverCount, filteredCount, note } =
@@ -597,6 +643,8 @@ async function fetchByCategory({ categoryId }) {
   //   listTasks.item.push(...items);
   // };
 
+  // await categoryRes();
+
   // 데이터베이스에 있는건 volume 200 안넘어도 업데이트
 
   // await processDivided(divided, listTasks);
@@ -605,7 +653,24 @@ async function fetchByCategory({ categoryId }) {
   console.log("item", listTasks.item.length);
 
   const items = (listTasks.item ?? []).filter((p) => {
-    return Number(p?.volume) >= 150;
+    console.log("p", p);
+    const limitCategory1 = categoryList.find(
+      (c) => c.categoryName === p.c1_name,
+    );
+    const limitCategory2 = categoryList.find(
+      (c) => c.categoryName === p.c2_name,
+    );
+
+    console.log("limitCategory1", limitCategory1);
+    console.log("limitCategory2", limitCategory2);
+
+    if (limitCategory1) {
+      return Number(p?.volume) >= limitCategory1.vol;
+    } else if (limitCategory2) {
+      return Number(p?.volume) >= limitCategory2.vol;
+    } else {
+      return Number(p?.volume) >= 150;
+    }
   });
   const dbs = listTasks.dataBaseRes ?? [];
 
@@ -684,7 +749,7 @@ async function fetchByCategory({ categoryId }) {
                 retries: 2,
                 base: 800,
                 max: 10000,
-              })
+              }),
             );
             const productData = pdRes.ok ? pdRes.value : null;
 
@@ -735,7 +800,7 @@ async function fetchByCategory({ categoryId }) {
                 retries: 2,
                 base: 800,
                 max: 10000,
-              })
+              }),
             );
 
             const productData = pdRes.ok ? pdRes.value : null;
@@ -847,7 +912,7 @@ async function fetchByCategory({ categoryId }) {
           // 4) 기존 문서의 sku_id 집합만 얇게 조회 — 경로 "sku_info.sil"
           const doc = await ProductDetail.findById(productId)
             .select(
-              "sku_info.sil.c sku_info.sil.sp sku_info.sil.pd sku_info.sil.spKey"
+              "sku_info.sil.c sku_info.sil.sp sku_info.sil.pd sku_info.sil.spKey",
             )
             .lean();
 
@@ -855,7 +920,7 @@ async function fetchByCategory({ categoryId }) {
           const safeNorm = (v) => norm(v ?? "");
           const toKey1 = (color, props) =>
             `\u0001${normalizeCForCompare(color)}\u0001${normalizeSpForCompare(
-              props
+              props,
             )}`;
           const toKey2 = (color, props) =>
             `\u0001${normalizeCForCompare(color)}\u0001${canonSkuProps(props)}`;
@@ -926,13 +991,13 @@ async function fetchByCategory({ categoryId }) {
             }
 
             // 문제 지점 전후로 세분화 try-catch
-            let incomingSale;
-            try {
-              incomingSale = toNum(item1?.sale_price_with_tax ?? null);
-              // incomingSale = toNum(1 ?? null);
-            } catch (e) {
-              throw e;
-            }
+            // let incomingSale;
+            // try {
+            //   incomingSale = toNum(item1?.sale_price_with_tax ?? null);
+            //   // incomingSale = toNum(1 ?? null);
+            // } catch (e) {
+            //   throw e;
+            // }
             let docToday, docSale;
             try {
               docToday = exist1?.pd?.[todayKey];
@@ -942,9 +1007,7 @@ async function fetchByCategory({ categoryId }) {
             }
 
             if (docToday) {
-              if (docSale > incomingSale) {
-                lowPriceUpdSkus.push(item1);
-              }
+              lowPriceUpdSkus.push(item1);
             } else {
               updSkus.push(item1);
             }
@@ -1026,7 +1089,7 @@ async function fetchByCategory({ categoryId }) {
             });
           }
 
-          // 5-3) 오늘 최저가 갱신 (문서의 오늘가 > 신규가)
+          // 5-3) 오늘 갱신했지만 가격이 바뀐 경우
           for (const s of lowPriceUpdSkus) {
             // const sId = String(s.sku_id);
             const cNorm = normalizeCForCompare(s.color);
@@ -1038,7 +1101,7 @@ async function fetchByCategory({ categoryId }) {
             const cRegex = makeSpaceAgnosticPattern(cNorm);
 
             console.log("item:", item._id);
-            console.log("당일 최저가:!!");
+            console.log("가격 바뀜");
 
             const pricePoint = {
               s: Number(s.sale_price_with_tax),
@@ -1138,8 +1201,8 @@ async function fetchByCategory({ categoryId }) {
             message: err?.message,
           });
         }
-      })
-    )
+      }),
+    ),
   );
 
   console.log("실패한 상품 IDs:", failedIds);

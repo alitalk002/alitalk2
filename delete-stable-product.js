@@ -22,7 +22,7 @@ import dbConnect from "./utils/dbConnect.js";
  */
 export async function main({
   query = {},
-  days = 13, // ✅ 기본 13일
+  days = 14, // ✅ 기본 14일
   verbose = false,
   disconnectAfter = false,
   batchSize = 500,
@@ -49,8 +49,8 @@ export async function main({
   console.log(`🧭 threshold=${threshold.toISOString()} (${days}일 기준)`);
   console.log(
     `🧭 대상: ${isSingle ? "단일(_id 지정)" : "전체"} | query=${JSON.stringify(
-      query
-    )}`
+      query,
+    )}`,
   );
   console.log(`📦 배치크기=${batchSize}, 진행로그 간격=${progressEvery}`);
 
@@ -82,7 +82,7 @@ export async function main({
         console.log(
           `🗑️ 삭제대상: _id=${doc._id} | 포인트수=${points} | 최신=${
             newest ?? "없음"
-          } | 기준>=${threshold.toISOString()}`
+          } | 기준>=${threshold.toISOString()}`,
         );
       }
 
@@ -99,14 +99,14 @@ export async function main({
         console.log(
           `✔️ 유지: _id=${doc._id} | 포인트수=${points} | 최신=${
             newest ?? "없음"
-          } (>= ${threshold.toISOString()})`
+          } (>= ${threshold.toISOString()})`,
         );
       }
     }
 
     if (progressEvery > 0 && total % progressEvery === 0) {
       console.log(
-        `⏩ 진행: 처리=${total} | 삭제예정=${deleted} | 유지=${kept} | 배치대기=${bulkOps.length}`
+        `⏩ 진행: 처리=${total} | 삭제예정=${deleted} | 유지=${kept} | 배치대기=${bulkOps.length}`,
       );
     }
 
@@ -124,7 +124,7 @@ export async function main({
 
   if (deleted === 0) {
     console.log(
-      "ℹ️ 삭제 후보가 0건입니다. (모든 문서가 기준 내 최근 포인트를 보유하거나, 질의 결과가 비었습니다)"
+      "ℹ️ 삭제 후보가 0건입니다. (모든 문서가 기준 내 최근 포인트를 보유하거나, 질의 결과가 비었습니다)",
     );
   }
 
@@ -169,7 +169,7 @@ async function flushBulk(ops, isLast = false) {
   try {
     const res = await ProductDetail.bulkWrite(ops, { ordered: false });
     console.log(
-      `💥 ${label} 실행: 삭제=${res?.deletedCount ?? 0}, 배치크기=${ops.length}`
+      `💥 ${label} 실행: 삭제=${res?.deletedCount ?? 0}, 배치크기=${ops.length}`,
     );
   } catch (err) {
     console.error(`❌ ${label} 에러:`, err?.message || err);

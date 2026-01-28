@@ -158,6 +158,11 @@ const ProductDetailSchema = new mongoose.Schema(
       required: false,
       alias: "category_id_3_name",
     },
+    c4n: {
+      type: "string",
+      required: false,
+      alias: "category_id_4_name",
+    },
 
     tt: { type: String, required: true, alias: "title" },
 

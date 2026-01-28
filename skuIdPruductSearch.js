@@ -11,7 +11,7 @@ const TRACKING_ID = process.env.AE_TRACKING_ID;
 function signSha256(params, secret) {
   // 1) sign을 제외하고, 값이 undefined/null 아닌 것만
   const entries = Object.entries(params).filter(
-    ([k, v]) => k !== "sign" && v !== undefined && v !== null
+    ([k, v]) => k !== "sign" && v !== undefined && v !== null,
   );
   // 2) 키 오름차순 정렬
   entries.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
@@ -100,7 +100,7 @@ export async function getSkuDetail(productId) {
     //   },
     // };
 
-    // console.log("result:", result.ae_item_sku_info.traffic_sku_info_list);
+    console.log("result", result);
 
     return result;
   } catch (e) {
@@ -108,4 +108,4 @@ export async function getSkuDetail(productId) {
   }
 }
 
-getSkuDetail(1005008156073909);
+getSkuDetail(1005007344949896);

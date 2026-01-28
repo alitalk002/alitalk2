@@ -7,7 +7,7 @@ import CategoryLandingProduct from "./models/CategoryLandingProduct.js";
 // ── 기준: 현재로부터 4일
 const FOUR_DAYS_MS = 4 * 24 * 60 * 60 * 1000;
 
-function analyzePd(pdObj, start, end) {
+function analyzePd(pdObj, start, end, productId) {
   if (!pdObj || typeof pdObj !== "object") {
     return {
       hasData: false,
@@ -94,9 +94,13 @@ function analyzePd(pdObj, start, end) {
 
   // 평균가 대비 현재가 할인율(%)
   const avgToCurrentDiscountPct =
-    avgSale != null && avgSale > 0 && latestSale != null
+    avgSale != null &&
+    avgSale > 0 &&
+    latestSale != null &&
+    cntSale >= 30 &&
+    avgSale - latestSale >= 0
       ? ((avgSale - latestSale) / avgSale) * 100
-      : null;
+      : 0;
 
   // 표시용(소수 1자리) - 필요 없으면 빼도 됨
   const avgToCurrentDiscountPctRounded =
@@ -181,7 +185,7 @@ function getRange(rangeParam) {
     return { start, end: now, label: "calendarMonth" };
   }
   const end = now;
-  const start = new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const start = new Date(end.getTime() - 60 * 24 * 60 * 60 * 1000);
   return { start, end, label: "rolling30" };
 }
 
@@ -196,31 +200,57 @@ async function getServerSideProps(ctx) {
 
   await dbConnect();
 
+  // const categoryList = [
+  //   { categoryName: "음식", categoryId: "2" },
+  //   { categoryName: "가전제품", categoryId: "6" },
+  //   { categoryName: "소비자 가전", categoryId: "44" },
+  //   { categoryName: "태블릿", categoryId: "200001086" },
+  //   { categoryName: "이동 전화", categoryId: "5090301" },
+  //   { categoryName: "노트북", categoryId: "702" },
+  //   { categoryName: "문구", categoryId: "21" },
+  //   { categoryName: "생활용품", categoryId: "13" },
+  //   { categoryName: "뷰티/헬스", categoryId: "66" },
+  //   { categoryName: "주방용품", categoryId: "200000920" },
+  //   { categoryName: "남성의류", categoryId: "200000343" },
+  //   { categoryName: "여성의류", categoryId: "200000345" },
+  //   { categoryName: "신발", categoryId: "322" },
+  //   { categoryName: "스포츠", categoryId: "18" },
+  //   { categoryName: "완구/취미", categoryId: "26" },
+  //   { categoryName: "자동차용품", categoryId: "34" },
+  //   { categoryName: "안전/보안", categoryId: "30" },
+  //   { categoryName: "조명", categoryId: "39" },
+  // ];
   const categoryList = [
     { categoryName: "음식", categoryId: "2" },
-    { categoryName: "가전제품", categoryId: "6" },
-    { categoryName: "소비자 가전", categoryId: "44" },
-    { categoryName: "태블릿", categoryId: "200001086" },
-    { categoryName: "이동 전화", categoryId: "5090301" },
-    { categoryName: "노트북", categoryId: "702" },
-    { categoryName: "문구", categoryId: "21" },
-    { categoryName: "생활용품", categoryId: "13" },
-    { categoryName: "뷰티/헬스", categoryId: "66" },
-    { categoryName: "주방용품", categoryId: "200000920" },
-    { categoryName: "남성의류", categoryId: "200000343" },
-    { categoryName: "여성의류", categoryId: "200000345" },
-    { categoryName: "신발", categoryId: "322" },
-    { categoryName: "스포츠", categoryId: "18" },
-    { categoryName: "완구/취미", categoryId: "26" },
-    { categoryName: "자동차용품", categoryId: "34" },
-    { categoryName: "안전/보안", categoryId: "30" },
-    { categoryName: "조명", categoryId: "39" },
+    // { categoryName: "그래픽 카드", categoryId: "2" },
+    { categoryName: "태블릿", categoryId: "2" },
+    // { categoryName: "노트북", categoryId: "2" },
+    // { categoryName: "데스크탑", categoryId: "2" },
+    { categoryName: "마우스 및 키보드", categoryId: "2" },
+    { categoryName: "LCD 모니터", categoryId: "2" },
+    { categoryName: "스피커", categoryId: "2" },
+    { categoryName: "SSD", categoryId: "2" },
+    { categoryName: "램", categoryId: "2" },
+    { categoryName: "PC 전원 공급 장치", categoryId: "2" }, // 파워서플라이
+    { categoryName: "컴퓨터 케이스 및 타워", categoryId: "2" }, // 컴퓨터 케이스
+    // { categoryName: "PC 팬 & 쿨링", categoryId: "2" }, // 쿨러
+    { categoryName: "AIO CPU 액체 냉각", categoryId: "2" }, // 쿨러
+    { categoryName: "낚시 미끼", categoryId: "2" }, // 쿨러
+    { categoryName: "낚시바늘", categoryId: "2" }, // 쿨러
+    { categoryName: "낚시 릴", categoryId: "2" }, // 쿨러
+    { categoryName: "낚시 줄", categoryId: "2" }, // 쿨러
+    { categoryName: "태클박스", categoryId: "2" }, // 쿨러
+    { categoryName: "낚시대", categoryId: "2" }, // 쿨러
+    { categoryName: "낚시 찌", categoryId: "2" }, // 쿨러
+    { categoryName: "낚시 가방", categoryId: "2" }, // 쿨러
+    // { categoryName: "CPU 팬 및 히트싱크", categoryId: "2" }, // 쿨러
+    // { categoryName: "CPU 팬 및 히트싱크", categoryId: "2" }, // 쿨러
+    // { categoryName: "CPU 팬 및 히트싱크", categoryId: "2" }, // 쿨러
+    // { categoryName: "CPU 팬 및 히트싱크", categoryId: "2" }, // 쿨러
+    // { categoryName: "CPU 팬 및 히트싱크", categoryId: "2" }, // 쿨러
+    // { categoryName: "CPU 팬 및 히트싱크", categoryId: "2" }, // 쿨러
+    // { categoryName: "CPU 팬 및 히트싱크", categoryId: "2" }, // 쿨러
   ];
-
-  const allProductPsList = [];
-  const allProductVolList = [];
-  const allProductRnList = [];
-  const allProductOffList = [];
 
   const { start, end, label: range } = getRange(undefined);
 
@@ -229,14 +259,23 @@ async function getServerSideProps(ctx) {
   for (let category of categoryList) {
     let raw;
 
-    const catDoc = await ProductCategories.findOne({
-      cId: String(category.categoryId),
+    // const catDoc = await ProductCategories.findOne({
+    //   cId: String(category.categoryId),
+    // }).lean();
+    // const cid = catDoc?._id?.toString();
+
+    raw = await ProductDetail.find({
+      $or: [
+        { c1n: category.categoryName },
+        { c2n: category.categoryName },
+        { c3n: category.categoryName },
+        { c4n: category.categoryName },
+      ],
     }).lean();
-    const cid = catDoc?._id?.toString();
 
-    raw = await ProductDetail.find({ cId1: cid }).lean();
+    // if (!raw?.length) raw = await ProductDetail.find({ cId2: cid }).lean();
 
-    if (!raw?.length) raw = await ProductDetail.find({ cId2: cid }).lean();
+    console.log("raw:", raw.length);
 
     const allSkus = [];
 
@@ -248,21 +287,20 @@ async function getServerSideProps(ctx) {
 
         const sku_filtered = sil
           .map((sku) => {
-            const { lowestSale, latestSale, isFlat } = analyzePd(
-              sku?.pd,
-              start,
-              end
-            );
+            const { lowestSale, latestSale, avgToCurrentDiscountPct } =
+              analyzePd(sku?.pd, start, end, doc._id);
 
             if (!doc._id) return null;
 
             // 기간 내 포인트 없거나 flat 제거
             if (lowestSale == null || latestSale == null) return null;
 
-            if (isFlat) return null;
+            if (Number(avgToCurrentDiscountPct <= 0)) return null;
+
+            // if (isFlat) return null;
 
             // 최신가가 기간 최저가와 같지 않으면 제거
-            if (Number(latestSale) !== Number(lowestSale)) return null;
+            // if (Number(latestSale) !== Number(lowestSale)) return null;
 
             const latestPdAt = getLatestPdTime(sku?.pd);
             const now = new Date();
@@ -278,10 +316,7 @@ async function getServerSideProps(ctx) {
               return null;
 
             const latest = Number(latestSale);
-            const ratio = latest / avgSale; // 낮을수록 "평균 대비 현재가"가 저렴
-
-            // console.log("doc:", doc);
-            console.log("성공");
+            const ratio = avgToCurrentDiscountPct;
 
             // 상위 랭킹용 풀 컬렉션에 적재
             allSkus.push({
@@ -293,6 +328,8 @@ async function getServerSideProps(ctx) {
               sp: sku?.sp,
               cur: sku?.cur || "KRW",
               latestSale: latest,
+              tt: doc?.tt,
+
               avgSale,
               ratio,
             });
@@ -335,7 +372,7 @@ async function getServerSideProps(ctx) {
             const { lowestSale, latestSale, isFlat } = analyzePd(
               sku?.pd,
               start,
-              end
+              end,
             );
 
             // 기존 조건
@@ -376,7 +413,7 @@ async function getServerSideProps(ctx) {
             const { lowestSale, latestSale, isFlat } = analyzePd(
               sku?.pd,
               start,
-              end
+              end,
             );
 
             // 기존 조건
@@ -418,7 +455,7 @@ async function getServerSideProps(ctx) {
             const { lowestSale, latestSale, isFlat } = analyzePd(
               sku?.pd,
               start,
-              end
+              end,
             );
 
             // 기존 조건
@@ -456,7 +493,6 @@ async function getServerSideProps(ctx) {
 
       .slice(0, 20)
       .map((item) => {
-        allProductPsList.push(item);
         return item._id;
       });
     const volTop20 = volList
@@ -464,29 +500,22 @@ async function getServerSideProps(ctx) {
       .slice(0, 20)
 
       .map((item) => {
-        allProductVolList.push(item);
-
         return item._id;
       });
     const rnTop20 = rnList
       .sort((a, b) => b.rn - a.rn)
       .slice(0, 20)
       .map((item) => {
-        allProductRnList.push(item);
         // console.log("item:", item);
         return item._id;
       });
 
     // 할인탑 100 중복검사 코드
 
-    allProductOffList.push(...allSkus);
-
     const offTop20 = [];
     const seen = new Set();
 
-    for (const item of allSkus.sort(
-      (a, b) => a.ratio - b.ratio || a.latestSale - b.latestSale
-    )) {
+    for (const item of allSkus.sort((a, b) => b.ratio - a.ratio)) {
       // 1) 저장에 쓸 product 확정(옵션 B: ProductDetail의 _id가 오길 기대)
       const product = item.productId ?? item._id ?? item.pid;
       if (!product) continue; // 필수값 없으면 스킵
@@ -502,15 +531,14 @@ async function getServerSideProps(ctx) {
         sId: item.sId ?? null,
         c: item.c ?? null,
         sp: item.sp,
+        ratio: item.ratio,
+        tt: item.tt,
       });
 
       if (offTop20.length === 20) break; // 100개에서 종료
     }
 
-    allProductOffList.push(...offTop20);
-    allProductRnList.push(...rnTop20);
-    allProductPsList.push(...psTop20);
-    allProductVolList.push(...volTop20);
+    console.log("offTop20", offTop20.slice(0, 20));
 
     const res = await CategoryLandingProduct.updateOne(
       { categoryName: category.categoryName },
@@ -523,67 +551,13 @@ async function getServerSideProps(ctx) {
         },
         $setOnInsert: { categoryName: category.categoryName }, // 문서 없으면 생성 시 이름도 세팅
       },
-      { runValidators: true, upsert: true } // 유효성검사 + 없으면 생성
+      { runValidators: true, upsert: true }, // 유효성검사 + 없으면 생성
     );
 
     // console.log("updateOne result:", res); // matchedCount/modifiedCount 확인
 
     // 상품 정렬: 대표 최저가 오름차순 → 리뷰수 rn 내림차순
   }
-
-  const allProductPsTop20 = allProductPsList
-    .sort((a, b) => b.ps - a.ps)
-    .slice(0, 20)
-    .map((item) => item._id);
-  const allProductVolTop20 = allProductVolList
-    .sort((a, b) => b.vol - a.vol)
-    .slice(0, 20)
-    .map((item) => item._id);
-  const allProductRnTop20 = allProductRnList
-    .sort((a, b) => b.rn - a.rn)
-    .slice(0, 20)
-    .map((item) => item._id);
-
-  const allProductOffTop20 = [];
-  const seen = new Set();
-
-  for (const item of allProductOffList.sort(
-    (a, b) => a.ratio - b.ratio || a.latestSale - b.latestSale
-  )) {
-    // 1) 저장에 쓸 product 확정
-    const product = item.productId ?? item._id ?? item.pid;
-    if (!product) continue;
-
-    // 2) 동일 기준으로 중복 체크
-    const key =
-      product?.toHexString?.() ?? product?.toString?.() ?? String(product);
-    if (seen.has(key)) continue;
-    seen.add(key);
-
-    // 4) 결과 푸시(옵션 B 스키마에 바로 맞는 형태)
-    allProductOffTop20.push({
-      product, // ← offList[].product에 그대로 사용
-      c: item.c ?? null,
-      sp: item.sp,
-      sId: item.sId ?? null,
-    });
-
-    if (allProductOffTop20.length === 20) break;
-  }
-
-  const res = await CategoryLandingProduct.updateOne(
-    { categoryName: "전체" },
-    {
-      $set: {
-        rnList: allProductRnTop20,
-        volList: allProductVolTop20,
-        psList: allProductPsTop20,
-        offList: allProductOffTop20,
-      },
-      $setOnInsert: { categoryName: "전체" }, // 문서 없으면 생성 시 이름도 세팅
-    },
-    { runValidators: true, upsert: true } // 유효성검사 + 없으면 생성
-  );
 
   process.exit(0);
 }
