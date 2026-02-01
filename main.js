@@ -77,6 +77,7 @@ const categoryList = [
   { categoryName: "정원 도구", vol: 2000 },
   { categoryName: "보안 경보", vol: 1000 },
   { categoryName: "메이크업", vol: 500 },
+{ categoryName: "낚시", vol: 100 },
 ];
 // ─────────────────────────────────────────────────────────────────────────────
 //  실패 무해 try/catch, 배열 정규화
