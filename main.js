@@ -76,8 +76,21 @@ const categoryList = [
   { categoryName: "출입 통제", vol: 3000 },
   { categoryName: "정원 도구", vol: 2000 },
   { categoryName: "보안 경보", vol: 1000 },
-  { categoryName: "메이크업", vol: 500 },
-{ categoryName: "낚시", vol: 100 },
+  { categoryName: "메이크업", vol: 1000 },
+  { categoryName: "세차 및 유지 관리", vol: 1000 },
+  { categoryName: "소모품", vol: 400 },
+  { categoryName: "연마 도구 및 연마재", vol: 400 },
+  { categoryName: "축제 & 파티 용품", vol: 400 },
+  { categoryName: "학습 및 교육", vol: 400 },
+  { categoryName: "자동차 조명", vol: 3000 },
+  { categoryName: "자동차 유지 관리 도구", vol: 750 },
+  { categoryName: "자동차 수리 도구", vol: 750 },
+  { categoryName: "드릴 비트, 톱날 및 절단 도구", vol: 500 },
+  { categoryName: "정원 용품", vol: 350 },
+  { categoryName: "산업 및 비즈니스", vol: 2000 },
+  { categoryName: "엔진 및 엔진 부품", vol: 1000 },
+  { categoryName: "용접 장비 및 소모품", vol: 1000 },
+  { categoryName: "낚시", vol: 400 },
 ];
 // ─────────────────────────────────────────────────────────────────────────────
 //  실패 무해 try/catch, 배열 정규화
